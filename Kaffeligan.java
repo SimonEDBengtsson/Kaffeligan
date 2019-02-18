@@ -7,15 +7,12 @@ public class Kaffeligan{
     final static String configPath="dependencies/kaffeligan.config";
     final static int winners=3;
     static int nameIndex=1,paidIndex=4;
-    static String backgroundImagePath="/home/simon/Documents/ZKK/dependencies/background.png";
-    static String logoImagePath="/home/simon/Documents/ZKK/dependencies/logo.png";
-    static String bronzeImagePath="/home/simon/Documents/ZKK/dependencies/bronze.png";
-    static String silverImagePath="/home/simon/Documents/ZKK/dependencies/silver.png";
-    static String goldImagePath="/home/simon/Documents/ZKK/dependencies/gold.png";
+    static String backgroundImagePath="dependencies/background.png";
+    static String logoImagePath="dependencies/logo.png";
+    static String bronzeImagePath="dependencies/bronze.png";
+    static String silverImagePath="dependencies/silver.png";
+    static String goldImagePath="dependencies/gold.png";
     static String lp="LP1";
-    public static void test()throws Throwable{
-        writePNG("/home/simon/Documents/ZKK/test.png",read("/home/simon/Documents/ZKK/testin.csv"));
-    }
     public static void main(String[] args){
         config();
         Scanner sc=new Scanner(System.in);
