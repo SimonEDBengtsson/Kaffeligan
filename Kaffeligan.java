@@ -100,7 +100,10 @@ public class Kaffeligan{
         ImageIO.write(createBufferedImage(ca),"png",new File(path));
     }
     private static void writeJPG(String path,Customer[] ca)throws java.io.IOException{
-        ImageIO.write(createBufferedImage(ca),"jpeg",new File(path));
+        BufferedImage argb=createBufferedImage(ca);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
+        BufferedImage bgr=new BufferedImage(argb.getWidth(),argb.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
+        bgr.getGraphics().drawImage(argb,0,0,null);
+        ImageIO.write(bgr,"jpeg",new File(path));
     }
     private static BufferedImage createBufferedImage(Customer[] ca)throws java.io.IOException{
         int width=1920,height=1080;
@@ -137,7 +140,7 @@ public class Kaffeligan{
         return image;
     }
     private static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){
-        g.setFont(new java.awt.Font("Garamond",java.awt.Font.BOLD,fontSize));
+        g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
         g.setColor(new java.awt.Color(20,20,20));
         g.drawString(text,x+fontSize/10,y+fontSize/10);
         g.setColor(new java.awt.Color(250,250,250));
