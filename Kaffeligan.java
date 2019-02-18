@@ -32,7 +32,7 @@ public class Kaffeligan{
             out=sc.nextLine();
         }
         if(args.length>2){
-            out=args[2];
+            lp=args[2];
         }
         else{
             System.out.print("What text would you like in the top right corner (LP \\d): ");
@@ -42,11 +42,15 @@ public class Kaffeligan{
             if(out.matches(".*\\.png$")){
                 writePNG(out,read(in));
             }
+            else if(out.matches(".*\\.jpg$")){
+                writeJPG(out,read(in));
+            }
             else{
-                System.err.println("Not a png file");
+                System.err.println("Invalid file type");
             }
         }
-        catch(Throwable t){
+        catch(java.io.IOException x){
+            x.printStackTrace();
             System.err.println("It didn't work and it's probably your fault.");
         }
     }
@@ -61,11 +65,11 @@ public class Kaffeligan{
             silverImagePath=in.readLine();
             bronzeImagePath=in.readLine();
         }
-        catch(Throwable t){
+        catch(java.io.IOException t){
             System.err.println("Config file not found, standard settings will be used.");
         }
     }
-    private static Customer[] read(String path)throws Throwable{
+    private static Customer[] read(String path)throws java.io.IOException{
         BufferedReader in=new BufferedReader(new FileReader(path));
         ArrayList<Customer> customers=new ArrayList<Customer>();
         String line=in.readLine();// header
@@ -92,7 +96,13 @@ public class Kaffeligan{
         Arrays.sort(ca);
         return ca;
     }
-    private static void writePNG(String path,Customer[] ca)throws Throwable{
+    private static void writePNG(String path,Customer[] ca)throws java.io.IOException{
+        ImageIO.write(createBufferedImage(ca),"png",new File(path));
+    }
+    private static void writeJPG(String path,Customer[] ca)throws java.io.IOException{
+        ImageIO.write(createBufferedImage(ca),"jpeg",new File(path));
+    }
+    private static BufferedImage createBufferedImage(Customer[] ca)throws java.io.IOException{
         int width=1920,height=1080;
         int logoLeftMargin=100,logoRightPadding=40;
         int medalLeftMargin=190,medalRightPadding=40,medalTopPadding=20;
@@ -124,7 +134,7 @@ public class Kaffeligan{
         g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
         outlinedText(g,ca[2].name,x,y+textBaseline,fontSize);
         outlinedText(g,ca[2].paid/100+","+ca[0].paid%100+":-",amountOffset,y+textBaseline,fontSize);
-        ImageIO.write(image,"png",new File(path));
+        return image;
     }
     private static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){
         g.setFont(new java.awt.Font("Garamond",java.awt.Font.BOLD,fontSize));
