@@ -132,11 +132,11 @@ public class Kaffeligan{
         y+=medalHeight+medalTopPadding;
         g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
         outlinedText(g,ca[1].name,x,y+textBaseline,fontSize);
-        outlinedText(g,ca[1].paid/100+","+ca[0].paid%100+":-",amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,ca[1].paid/100+","+ca[1].paid%100+":-",amountOffset,y+textBaseline,fontSize);
         y+=medalHeight+medalTopPadding;
         g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
         outlinedText(g,ca[2].name,x,y+textBaseline,fontSize);
-        outlinedText(g,ca[2].paid/100+","+ca[0].paid%100+":-",amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,ca[2].paid/100+","+ca[2].paid%100+":-",amountOffset,y+textBaseline,fontSize);
         return image;
     }
     private static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){
