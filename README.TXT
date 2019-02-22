@@ -1,1 +1,1 @@
-Program for converting a csv file into a "Kaffeligan" csv
+Program for converting a csv file into a "Kaffeligan" png or jpg
