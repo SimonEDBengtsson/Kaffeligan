@@ -45,6 +45,9 @@ public class Kaffeligan{
             else if(out.matches(".*\\.jpg$")){
                 writeJPG(out,read(in));
             }
+            else if(out.matches(".*\\.gif$")){
+                Civet.writeGIF(out,in);
+            }
             else{
                 System.err.println("Invalid file type");
             }
