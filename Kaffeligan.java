@@ -114,7 +114,7 @@ public class Kaffeligan{
         int medalLeftMargin=190,medalRightPadding=40,medalTopPadding=20;
         int topMargin=40,amountWidth=500;
         int logoSize=300,medalWidth=120,medalHeight=200,headerSize,textSize;
-        int headerFontSize=160,headerBaseline=(int)(headerFontSize*1.3),fontSize=90,textBaseline=(int)(fontSize*1.6);
+        int headerFontSize=160,fontSize=90,headerDownShift=45,textDownShift=35;
         ca=decideWinners(ca);// decide which three are the winners and their rankings
         BufferedImage background=ImageIO.read(new File(backgroundImagePath));// read in the graphical assets
         BufferedImage logo=ImageIO.read(new File(logoImagePath));
@@ -125,22 +125,25 @@ public class Kaffeligan{
         java.awt.Graphics g=image.getGraphics();// start composing the picture, background, logo, header
         g.drawImage(background.getScaledInstance(width,height,Image.SCALE_SMOOTH),0,0,null);
         g.drawImage(logo.getScaledInstance(logoSize,logoSize,Image.SCALE_SMOOTH),logoLeftMargin,topMargin,null);
-        shadowText(g,"Kaffeligan "+lp,logoLeftMargin+logoSize+logoRightPadding,topMargin+headerBaseline,headerFontSize);
+        shadowText(g,"Kaffeligan "+lp,logoLeftMargin+logoSize+logoRightPadding,topMargin+headerDownShift,headerFontSize);
         int amountOffset=width-amountWidth;// vertical baseline for paid amount
         int x=medalLeftMargin+medalWidth+medalRightPadding;// vertical baseline for names
         int y=topMargin+logoSize+medalTopPadding;// horizontal baseline for gold medal
         g.drawImage(gold.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);// add medal, name and paid amount
-        outlinedText(g,ca[0].name,x,y+textBaseline,fontSize);
-        outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,ca[0].name,x,y+textDownShift,fontSize);
+        outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textDownShift,fontSize);
         y+=medalHeight+medalTopPadding;// move horizontal baseline down to silver medal and repeat above steps for runner-up
         g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
-        outlinedText(g,ca[1].name,x,y+textBaseline,fontSize);
-        outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,ca[1].name,x,y+textDownShift,fontSize);
+        outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textDownShift,fontSize);
         y+=medalHeight+medalTopPadding;// finally do the bronze medalist
         g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
-        outlinedText(g,ca[2].name,x,y+textBaseline,fontSize);
-        outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,ca[2].name,x,y+textDownShift,fontSize);
+        outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textDownShift,fontSize);
         return image;
+    }
+    public static void test(){
+        main(new String[]{"/home/simon/Downloads/Kontohandelser2019-02-18.csv","/home/simon/Documents/ZKK/kaffe.png","test"});
     }
     public static String CSEKtoString(int csek){
         String kr=""+csek/100;
@@ -153,13 +156,17 @@ public class Kaffeligan{
         return kr+":-";
     }
     public static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with shadow
-        g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
+        java.awt.Font font=new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize);
+        y+=g.getFontMetrics(font).getAscent();
+        g.setFont(font);
         g.setColor(new java.awt.Color(20,20,20));
         g.drawString(text,x+fontSize/10,y+fontSize/10);// write black text diagonlly down to the right
         g.setColor(new java.awt.Color(250,250,250));
         g.drawString(text,x,y);// write white text on top
     }
     public static void outlinedText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with black outline
+        java.awt.Font font=new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize);
+        y+=g.getFontMetrics(font).getAscent();
         g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
         g.setColor(new java.awt.Color(50,50,50));
         g.drawString(text,x+1,y);// write black text shifted in each direction
