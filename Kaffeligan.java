@@ -142,14 +142,14 @@ public class Kaffeligan{
         outlinedText(g,ca[2].paid/100+","+ca[2].paid%100+":-",amountOffset,y+textBaseline,fontSize);
         return image;
     }
-    private static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with shadow
+    public static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with shadow
         g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
         g.setColor(new java.awt.Color(20,20,20));
         g.drawString(text,x+fontSize/10,y+fontSize/10);// write black text diagonlly down to the right
         g.setColor(new java.awt.Color(250,250,250));
         g.drawString(text,x,y);// write white text on top
     }
-    private static void outlinedText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with black outline
+    public static void outlinedText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with black outline
         g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
         g.setColor(new java.awt.Color(50,50,50));
         g.drawString(text,x+1,y);// write black text shifted in each direction
