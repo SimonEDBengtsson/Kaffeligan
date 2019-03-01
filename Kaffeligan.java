@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.awt.image.*;
 import javax.imageio.*;
 public class Kaffeligan{
-    final static String configPath="dependencies/kaffeligan.config";
     final static int winners=3;
     static int nameIndex=1,paidIndex=4;
     static String backgroundImagePath="dependencies/background.png";
@@ -13,66 +12,7 @@ public class Kaffeligan{
     static String silverImagePath="dependencies/silver.png";
     static String goldImagePath="dependencies/gold.png";
     static String lp="LP1";
-    public static void main(String[] args){// args will be interpreted as: input file, output file (.png and .jpg supported) and lastly what to put after the header
-        config();
-        Scanner sc=new Scanner(System.in);
-        String in,out;
-        if(args.length>=1){// for all 3, check args otherwise ask in console
-            in=args[0];
-        }
-        else{
-            System.out.print("Full path to input file: ");
-            in=sc.nextLine();
-        }
-        if(args.length>1){
-            out=args[1];
-        }
-        else{
-            System.out.print("Full path to output file: ");
-            out=sc.nextLine();
-        }
-        if(args.length>2){
-            lp=args[2];
-        }
-        else{
-            System.out.print("What text would you like in the top right corner (LP or LV for instance): ");
-            lp=sc.nextLine();
-        }
-        try{
-            if(out.matches(".*\\.png$")){
-                writePNG(out,read(in));
-            }
-            else if(out.matches(".*\\.jpg$")){
-                writeJPG(out,read(in));
-            }
-            else if(out.matches(".*\\.gif$")){
-                Civet.writeGIF(out,in);
-            }
-            else{
-                System.err.println("Invalid file type");
-            }
-        }
-        catch(java.io.IOException x){
-            x.printStackTrace();
-            System.err.println("It didn't work and it's probably your fault.");
-        }
-    }
-    private static void config(){// the config file can be used to change global variables, \n separated values
-        try{
-            BufferedReader in=new BufferedReader(new FileReader(configPath));
-            nameIndex=Integer.parseInt(in.readLine());
-            paidIndex=Integer.parseInt(in.readLine());
-            backgroundImagePath=in.readLine();
-            logoImagePath=in.readLine();
-            goldImagePath=in.readLine();
-            silverImagePath=in.readLine();
-            bronzeImagePath=in.readLine();
-        }
-        catch(java.io.IOException t){
-            System.err.println("Config file not found, standard settings will be used.");
-        }
-    }
-    private static Customer[] read(String path)throws java.io.IOException{// Customer is a wrapper class for a name and paid amount with the Comparable interface
+    public static Customer[] read(String path)throws java.io.IOException{// Customer is a wrapper class for a name and paid amount with the Comparable interface
         BufferedReader in=new BufferedReader(new FileReader(path));// read in the csv file
         ArrayList<Customer> customers=new ArrayList<Customer>(3);
         String line=in.readLine();// this line is the header and can thus be discarded
@@ -99,10 +39,10 @@ public class Kaffeligan{
         Arrays.sort(ca);// the Comparable interface is implemented to put the highest paid in the beginning of the list
         return ca;
     }
-    private static void writePNG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
+    public static void writePNG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
         ImageIO.write(createBufferedImage(ca),"png",new File(path));
     }
-    private static void writeJPG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
+    public static void writeJPG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
         BufferedImage argb=createBufferedImage(ca);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
         BufferedImage bgr=new BufferedImage(argb.getWidth(),argb.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
         bgr.getGraphics().drawImage(argb,0,0,null);
@@ -141,9 +81,6 @@ public class Kaffeligan{
         outlinedText(g,ca[2].name,x,y+textDownShift,fontSize);
         outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textDownShift,fontSize);
         return image;
-    }
-    public static void test(){
-        main(new String[]{"/home/simon/Downloads/Kontohandelser2019-02-18.csv","/home/simon/Documents/ZKK/kaffe.png","test"});
     }
     public static String CSEKtoString(int csek){
         String kr=""+csek/100;

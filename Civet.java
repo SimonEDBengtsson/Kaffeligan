@@ -6,11 +6,11 @@ import java.awt.Color;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 public class Civet{
-    private static int balanceIndex=5;// index of balance in csv file
-    private static int sadnessLimit=100000,startingBalance=200000;// amount of öre considered a significant loss and starting balance
-    private static int fps=5,duration=5;// duration in seconds
-    private static String civetPath="dependencies/civet.png";
-    private static String tearPath="dependencies/tear.png";
+    protected static int balanceIndex=5;// index of balance in csv file
+    protected static int sadnessLimit=100000,startingBalance=200000;// amount of öre considered a significant loss and starting balance
+    protected static int fps=5,duration=5;// duration in seconds
+    protected static String civetPath="dependencies/civet.png";
+    protected static String tearPath="dependencies/tear.png";
     public static void writeGIF(String outPath,String inPath)throws java.io.IOException{
         BufferedReader in=new BufferedReader(new FileReader(inPath));
         String mem=null,line;
@@ -29,12 +29,6 @@ public class Civet{
         else if(balance>startingBalance){// any profit
             happyCivet(gif,civet,balance-startingBalance);
         }
-    }
-    public static void test()throws Throwable{
-        ImageOutputStream out=new FileImageOutputStream(new File("/home/simon/Documents/ZKK/civet.gif"));// ready the gif writer
-        BufferedImage civet=ImageIO.read(new File(civetPath));
-        GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
-        sadCivet(gif,civet,152341);
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit)throws java.io.IOException{
         int width=1920,height=1080,rightEyeX=1310,rightEyeY=580,leftEyeX=886,leftEyeY=650;
