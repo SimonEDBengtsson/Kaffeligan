@@ -10,6 +10,7 @@ public class Civet{
     private static int sadnessLimit=100000,startingBalance=200000;// amount of öre considered a significant loss and starting balance
     private static int fps=5,duration=3;// duration in seconds
     private static String civetPath="dependencies/civet.png";
+    private static String tearPath="dependencies/tear.png";
     public static void writeGIF(String outPath,String inPath)throws java.io.IOException{
         BufferedReader in=new BufferedReader(new FileReader(inPath));
         String mem=null,line;
@@ -34,7 +35,7 @@ public class Civet{
         Kaffeligan.outlinedText(g,"ZKK har gått "+deficit+" öre back",50,100,100);
         gif.writeToSequence(civet);
         for(int i=1;i<duration*fps;i++){
-            Kaffeligan.outlinedText(g,"ZKK har gått "+deficit+" öre back",50+i,100,100);
+            
             gif.writeToSequence(civet);
         }
         gif.close();

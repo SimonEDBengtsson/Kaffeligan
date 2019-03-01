@@ -131,16 +131,26 @@ public class Kaffeligan{
         int y=topMargin+logoSize+medalTopPadding;// horizontal baseline for gold medal
         g.drawImage(gold.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);// add medal, name and paid amount
         outlinedText(g,ca[0].name,x,y+textBaseline,fontSize);
-        outlinedText(g,ca[0].paid/100+","+ca[0].paid%100+":-",amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textBaseline,fontSize);
         y+=medalHeight+medalTopPadding;// move horizontal baseline down to silver medal and repeat above steps for runner-up
         g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
         outlinedText(g,ca[1].name,x,y+textBaseline,fontSize);
-        outlinedText(g,ca[1].paid/100+","+ca[1].paid%100+":-",amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textBaseline,fontSize);
         y+=medalHeight+medalTopPadding;// finally do the bronze medalist
         g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
         outlinedText(g,ca[2].name,x,y+textBaseline,fontSize);
-        outlinedText(g,ca[2].paid/100+","+ca[2].paid%100+":-",amountOffset,y+textBaseline,fontSize);
+        outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textBaseline,fontSize);
         return image;
+    }
+    public static String CSEKtoString(int csek){
+        String kr=""+csek/100;
+        if((csek%=100)<10){
+            kr+=",0"+csek;
+        }
+        else{
+            kr+=","+csek;
+        }
+        return kr+":-";
     }
     public static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with shadow
         g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
