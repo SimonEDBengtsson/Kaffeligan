@@ -76,16 +76,16 @@ public class Civet{
     }
     private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit,long time)throws java.io.IOException{
         int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
-        int rightCheekX=1440,rightCheekY=690,leftCheekX=800,leftCheekY=780;
+        int rightCheekX=1400,rightCheekY=690,leftCheekX=800,leftCheekY=780;
         int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
         int sparkleNumber=6;
         Graphics g=civet.getGraphics();
         centeredOutlinedText(g,"ZKK har gått plus "+Kaffeligan.CSEKtoString(profit),width,0,100);
         centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
-        blush(g,rightCheekX,rightCheekY);
-        blush(g,leftCheekX,leftCheekY);
         BufferedImage smile=ImageIO.read(new File(smilePath));
         g.drawImage(smile.getScaledInstance(smileWidth,smileHeight,Image.SCALE_SMOOTH),smileX-smileWidth/2,smileY-smileHeight/2,null);
+        blush(g,rightCheekX,rightCheekY);
+        blush(g,leftCheekX,leftCheekY);
         gif.writeToSequence(civet);
         ArrayList<Sparkle> sparkles=new ArrayList<Sparkle>(sparkleNumber*2);
         for(int i=1;i<duration*fps;i++){
@@ -142,8 +142,10 @@ public class Civet{
         }
         return result;
     }
-    public static void blush(Graphics g,int x,int y){
-        
+    public static void blush(Graphics g,int x,int y){// make a red circle centered around (x,y)
+        g.setColor(Color.RED);
+        ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.3F));
+        g.fillOval(x,y,100,100);
     }
     private static void changeBrightness(BufferedImage image,float brightnessMultiplier){
         WritableRaster raster=image.getRaster();// get image as raster and preallocate arrays
@@ -240,6 +242,7 @@ public class Civet{
         }
         private BufferedImage sparkle;
         private int x,y;
+        float time=1;
         public static Sparkle randomSparkle(int x,int y){
             double r=Math.random()*60+40;
             double ang=Math.random()*2*Math.PI;
@@ -254,7 +257,9 @@ public class Civet{
             sparkle.getGraphics().drawImage(sourceSparkle.getScaledInstance(width,height,Image.SCALE_SMOOTH),0,0,null);
         }
         public void paint(Graphics g){
+            ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,time));
             g.drawImage(sparkle,x,y,null);
+            time-=.15;
         }
     }
     public static BufferedImage rotate(BufferedImage bi,double ang){
