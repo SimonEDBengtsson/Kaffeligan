@@ -1,4 +1,4 @@
-﻿Datum;Text;Typ;Budgetgrupp;Belopp;Saldo
-2019-00-134;Swish John Doe;Insättning;Övrigt;13,37 kr;1 000 000 kr
+﻿Datum;Text;Typ;Budgetgrupp;Belopp;Saldo This line is ignored, 
+2018-09-03;Swish John Doe;Insättning;Övrigt;13,37 kr;1 000 000,00 kr
 1874-01-01;Swish Doe,Jane;Insättning;Övrigt;78,07 kr;ofkspofj kr
-3000B.C.;Swish Haddock, Captain;Insättning;Övrigt;1917,00 kr;Only the name and paid amount is ever checked
+2019-02-24;Swish Haddock, Captain;Insättning;Övrigt;1917,00 kr;574,89 kr
