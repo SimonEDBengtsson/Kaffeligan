@@ -1,12 +1,14 @@
 import java.io.*;
 import java.util.*;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.*;
+import java.awt.geom.AffineTransform;
 import java.awt.Color;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 public class Civet{
-    final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;
+    final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;// conversion constants milliseconds in a month/week/day
+    protected static int width=1920,height=1080;
     protected static int dateIndex=0,balanceIndex=5;// index of balance in csv file
     protected static int fps=5,duration=5;// duration in seconds
     protected static String civetPath="dependencies/civet.png";
@@ -34,7 +36,7 @@ public class Civet{
         }
     }
     private static long extractDate(String line){// date in milliseconds since the epoch
-        String[] date=line.split(";")[dateIndex].split("-");
+        String[] date=line.split(";")[dateIndex].split("-");// yyyy-mm-dd;other;stuff;...
         return new GregorianCalendar(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])).getTimeInMillis();
     }
     private static int extractBalance(String line){// finds balance in CSEK
@@ -43,32 +45,32 @@ public class Civet{
         return Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{
-        int width=1920,height=1080,rightEyeX=1310,rightEyeY=580,leftEyeX=886,leftEyeY=650;
+        int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
         int tearSpreadX=41,tearSpreadY=21;
         java.awt.Graphics g=civet.getGraphics();
-        centeredOutlinedText(g,"ZKK har gått back "+Kaffeligan.CSEKtoString(deficit),width,0,100);
-        centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
-        gif.writeToSequence(civet);
+        centeredOutlinedText(g,"ZKK har gått back "+Kaffeligan.CSEKtoString(deficit),width,0,100);// first line
+        centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);// second line
+        gif.writeToSequence(civet);// base frame
         ArrayList<Tear> tears=new ArrayList<Tear>();
-        for(int i=1;i<duration*fps;i++){
+        for(int i=1;i<duration*fps;i++){// create a new frame with the base frame
             BufferedImage frame=new BufferedImage(civet.getWidth(),civet.getHeight(),civet.getType());
             g=frame.getGraphics();
             g.drawImage(civet,0,0,null);
-            if(i%2==0){
-                tears.add(new Tear(leftEyeX+(int)(Math.random()*tearSpreadX)-tearSpreadX/2,leftEyeY+(int)(Math.random()*tearSpreadY),5,10));
+            if(i%2==0){// add a new tear for every frame
+                tears.add(Tear.randomTear(leftEyeX,leftEyeY));
             }
             else{
-                tears.add(new Tear(rightEyeX+(int)(Math.random()*tearSpreadX)-tearSpreadX/2,rightEyeY+(int)(Math.random()*tearSpreadY),5,10));
+                tears.add(Tear.randomTear(rightEyeX,rightEyeY));
             }
             for(int j=0;j<tears.size();j++){
                 Tear t=tears.get(j);
-                if(t.outOfBounds(width,height)){
+                if(t.outOfBounds(width,height)){// remove tears that have left the frame
                     tears.remove(j);
                     j--;
                     continue;
                 }
-                t.paint(g);
-                t.tick();
+                t.paint(g);// paint them on the frame
+                t.tick();// activate physics
             }
             gif.writeToSequence(frame);
         }
@@ -129,9 +131,9 @@ public class Civet{
     }
     public static void centeredOutlinedText(java.awt.Graphics g,String text,int width,int y,int fontSize){
         java.awt.Font font=new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize);
-        y+=g.getFontMetrics(font).getAscent();
-        int x=(width-g.getFontMetrics(font).charsWidth(text.toCharArray(),0,text.toCharArray().length))/2;
         g.setFont(new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize));
+        y+=g.getFontMetrics().getAscent();
+        int x=(width-g.getFontMetrics(font).charsWidth(text.toCharArray(),0,text.toCharArray().length))/2;
         g.setColor(new java.awt.Color(50,50,50));
         g.drawString(text,x+1,y);// write black text shifted in each direction
         g.drawString(text,x-1,y);
@@ -150,26 +152,45 @@ public class Civet{
         static{
             try{
                 BufferedImage sourceTear=ImageIO.read(new File(tearPath));
-                tear=new BufferedImage(tearWidth,tearHeight,sourceTear.getType());
-                tear.getGraphics().drawImage(sourceTear.getScaledInstance(tearWidth,tearHeight,Image.SCALE_SMOOTH),0,0,null);
+                tear=new BufferedImage(tearHeight,tearHeight,sourceTear.getType());
+                tear.getGraphics()
+                .drawImage(
+                sourceTear.getScaledInstance(tearWidth,tearHeight,Image.SCALE_SMOOTH),(tearHeight-tearWidth)/2,0,null);
             }
             catch(java.io.IOException x){
                 tear=null;
             }
         }
-        int x,y,v,a;
-        public Tear(int x,int y,int v0,int a){// x is middle, y is top
+        double x,y,vx,vy,g,ang;
+        public static Tear randomTear(int x,int y){
+            double ang=Math.random()*2*Math.PI;
+            x+=tearHeight*Math.cos(ang)/2;
+            y+=tearHeight*Math.sin(ang)/2;
+            double v0=100.0/fps;
+            double g=50.0/fps;
+            return new Tear(x,y,v0*Math.cos(ang),v0*Math.sin(ang),g);
+        }
+        public Tear(int x,int y,double vx0,double vy0,double g){// x and y are in the middle
             this.x=x;
             this.y=y;
-            v=v0;
-            this.a=a;
+            vx=vx0;
+            vy=vy0;
+            this.g=g;
+            if(vx==0){
+                ang=vy>0?Math.PI/2:-Math.PI/2;
+            }
+            else{
+                ang=vx>0?Math.atan(vy/vx):Math.atan(vy/vx)+Math.PI;
+            }
         }
         public void paint(java.awt.Graphics g){
-            g.drawImage(tear,x+tearWidth/20,y,null);
+            g.drawImage(rotate(tear,ang-Math.PI/2),(int)(x+0.5)-tearHeight/2,(int)(y+0.5)-tearHeight/2,null);
         }
         public void tick(){
-            y+=v;
-            v+=a;
+            x+=vx;
+            y+=vy;
+            vy+=g;
+            ang=vx>0?Math.atan(vy/vx):Math.atan(vy/vx)+Math.PI;
         }
         public boolean outOfBounds(int width,int height){
             if(y<=-tearHeight || y>=height || x<=-tearWidth/2 || x>=width+tearWidth/2){
@@ -177,5 +198,11 @@ public class Civet{
             }
             return false;
         }
+    }
+    public static BufferedImage rotate(BufferedImage bi,double ang){
+        AffineTransform tx=new AffineTransform();
+        tx.rotate(ang,bi.getWidth()/2,bi.getHeight()/2);
+        AffineTransformOp op=new AffineTransformOp(tx,AffineTransformOp.TYPE_BILINEAR);
+        return op.filter(bi,null);
     }
 }
