@@ -13,6 +13,8 @@ public class Civet{
     protected static int fps=5,duration=5;// duration in seconds
     protected static String civetPath="dependencies/civet.png";
     protected static String tearPath="dependencies/tear.png";
+    protected static String sparklePath="dependencies/sparkle.png";
+    protected static String smilePath="dependencies/mouth.png";
     public static void writeGIF(String outPath,String inPath)throws java.io.IOException{
         BufferedReader in=new BufferedReader(new FileReader(inPath));
         String line=in.readLine();// header
@@ -56,12 +58,8 @@ public class Civet{
             BufferedImage frame=new BufferedImage(civet.getWidth(),civet.getHeight(),civet.getType());
             g=frame.getGraphics();
             g.drawImage(civet,0,0,null);
-            if(i%2==0){// add a new tear for every frame
-                tears.add(Tear.randomTear(leftEyeX,leftEyeY));
-            }
-            else{
-                tears.add(Tear.randomTear(rightEyeX,rightEyeY));
-            }
+            tears.add(Tear.randomTear(leftEyeX,leftEyeY));
+            tears.add(Tear.randomTear(rightEyeX,rightEyeY));
             for(int j=0;j<tears.size();j++){
                 Tear t=tears.get(j);
                 if(t.outOfBounds(width,height)){// remove tears that have left the frame
@@ -76,8 +74,36 @@ public class Civet{
         }
         gif.close();
     }
-    private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit,long time){
-        
+    private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit,long time)throws java.io.IOException{
+        int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
+        int rightCheekX=1440,rightCheekY=690,leftCheekX=800,leftCheekY=780;
+        int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
+        int sparkleNumber=6;
+        Graphics g=civet.getGraphics();
+        centeredOutlinedText(g,"ZKK har gått plus "+Kaffeligan.CSEKtoString(profit),width,0,100);
+        centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
+        blush(g,rightCheekX,rightCheekY);
+        blush(g,leftCheekX,leftCheekY);
+        BufferedImage smile=ImageIO.read(new File(smilePath));
+        g.drawImage(smile.getScaledInstance(smileWidth,smileHeight,Image.SCALE_SMOOTH),smileX-smileWidth/2,smileY-smileHeight/2,null);
+        gif.writeToSequence(civet);
+        ArrayList<Sparkle> sparkles=new ArrayList<Sparkle>(sparkleNumber*2);
+        for(int i=1;i<duration*fps;i++){
+            BufferedImage frame=new BufferedImage(civet.getWidth(),civet.getHeight(),civet.getType());
+            g=frame.getGraphics();
+            g.drawImage(civet,0,0,null);
+            sparkles.add(Sparkle.randomSparkle(rightEyeX,rightEyeY));
+            sparkles.add(Sparkle.randomSparkle(leftEyeX,leftEyeY));
+            for(Sparkle s:sparkles){
+                s.paint(g);
+            }
+            if(i>=sparkleNumber){
+                sparkles.remove(0);
+                sparkles.remove(0);
+            }
+            gif.writeToSequence(frame);
+        }
+        gif.close();
     }
     public static String formatTime(long ms){// in swedish
         String months=(int)(ms/msmonth)+(ms<2*msmonth?" månad":" månader");
@@ -115,6 +141,9 @@ public class Civet{
             }
         }
         return result;
+    }
+    public static void blush(Graphics g,int x,int y){
+        
     }
     private static void changeBrightness(BufferedImage image,float brightnessMultiplier){
         WritableRaster raster=image.getRaster();// get image as raster and preallocate arrays
@@ -197,6 +226,35 @@ public class Civet{
                 return true;
             }
             return false;
+        }
+    }
+    public static class Sparkle{
+        private static BufferedImage sourceSparkle;
+        static{
+            try{
+                sourceSparkle=ImageIO.read(new File(sparklePath));
+            }
+            catch(IOException x){
+                sourceSparkle=null;
+            }
+        }
+        private BufferedImage sparkle;
+        private int x,y;
+        public static Sparkle randomSparkle(int x,int y){
+            double r=Math.random()*60+40;
+            double ang=Math.random()*2*Math.PI;
+            x+=(int)(r*Math.cos(ang)+0.5);
+            y+=(int)(r*Math.sin(ang)+0.5);
+            return new Sparkle(x,y,(int)(Math.random()*30+30.5),(int)(Math.random()*30+30.5));
+        }
+        public Sparkle(int x,int y,int width,int height){
+            this.x=x-width/2;
+            this.y=y-height/2;
+            sparkle=new BufferedImage(width,height,sourceSparkle.getType());
+            sparkle.getGraphics().drawImage(sourceSparkle.getScaledInstance(width,height,Image.SCALE_SMOOTH),0,0,null);
+        }
+        public void paint(Graphics g){
+            g.drawImage(sparkle,x,y,null);
         }
     }
     public static BufferedImage rotate(BufferedImage bi,double ang){

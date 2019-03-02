@@ -26,6 +26,8 @@ public class GUI extends JFrame{
             Kaffeligan.bronzeImagePath=in.readLine();
             Civet.civetPath=in.readLine();
             Civet.tearPath=in.readLine();
+            Civet.sparklePath=in.readLine();
+            Civet.smilePath=in.readLine();
             Civet.fps=Integer.parseInt(in.readLine());
             Civet.duration=Integer.parseInt(in.readLine());
         }
