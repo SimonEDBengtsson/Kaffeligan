@@ -10,7 +10,7 @@ public class Civet{
     final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;// conversion constants milliseconds in a month/week/day
     protected static int width=1920,height=1080;
     protected static int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
-    protected static int rightCheekX=1400,rightCheekY=690,leftCheekX=800,leftCheekY=780;
+    protected static int rightCheekX=1400,rightCheekY=700,leftCheekX=800,leftCheekY=780;
     protected static int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
     protected static int dateIndex=0,balanceIndex=5;// index of balance in csv file
     protected static int fps=5,duration=5;// duration in seconds
@@ -82,8 +82,8 @@ public class Civet{
         centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
         BufferedImage smile=ImageIO.read(new File(smilePath));
         g.drawImage(smile.getScaledInstance(smileWidth,smileHeight,Image.SCALE_SMOOTH),smileX-smileWidth/2,smileY-smileHeight/2,null);
-        blush(g,rightCheekX,rightCheekY);
-        blush(g,leftCheekX,leftCheekY);
+        blush(g,rightCheekX,rightCheekY,0.3F);
+        blush(g,leftCheekX,leftCheekY,0.6F);
         gif.writeToSequence(civet);
         ArrayList<Sparkle> sparkles=new ArrayList<Sparkle>(sparkleNumber*2);
         for(int i=1;i<duration*fps;i++){
@@ -140,10 +140,10 @@ public class Civet{
         }
         return result;
     }
-    public static void blush(Graphics g,int x,int y){// make a red circle centered around (x,y)
-        g.setColor(Color.RED);
-        ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.3F));
-        g.fillOval(x,y,100,100);
+    public static void blush(Graphics g,int x,int y,float opacity){// make a red circle centered around (x,y)
+        g.setColor(new Color(255,0,55));
+        ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,opacity));
+        g.fillOval(x,y,100,60);
     }
     private static void changeBrightness(BufferedImage image,float brightnessMultiplier){
         WritableRaster raster=image.getRaster();// get image as raster and preallocate arrays
@@ -192,7 +192,7 @@ public class Civet{
         }
         double x,y,vx,vy,g,ang;
         public static Tear randomTear(int x,int y){
-            double ang=Math.random()*2*Math.PI;
+            double ang=Math.random()*Math.PI;
             x+=tearHeight*Math.cos(ang)/2;
             y+=tearHeight*Math.sin(ang)/2;
             double v0=100.0/fps;
