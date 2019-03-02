@@ -9,6 +9,9 @@ import javax.imageio.stream.*;
 public class Civet{
     final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;// conversion constants milliseconds in a month/week/day
     protected static int width=1920,height=1080;
+    protected static int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
+    protected static int rightCheekX=1400,rightCheekY=690,leftCheekX=800,leftCheekY=780;
+    protected static int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
     protected static int dateIndex=0,balanceIndex=5;// index of balance in csv file
     protected static int fps=5,duration=5;// duration in seconds
     protected static String civetPath="dependencies/civet.png";
@@ -47,18 +50,16 @@ public class Civet{
         return Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{
-        int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
-        int tearSpreadX=41,tearSpreadY=21;
         java.awt.Graphics g=civet.getGraphics();
         centeredOutlinedText(g,"ZKK har gått back "+Kaffeligan.CSEKtoString(deficit),width,0,100);// first line
         centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);// second line
         gif.writeToSequence(civet);// base frame
         ArrayList<Tear> tears=new ArrayList<Tear>();
-        for(int i=1;i<duration*fps;i++){// create a new frame with the base frame
+        for(int i=1;i<duration*fps;i++){// create a new frame and paint on the base frame
             BufferedImage frame=new BufferedImage(civet.getWidth(),civet.getHeight(),civet.getType());
             g=frame.getGraphics();
             g.drawImage(civet,0,0,null);
-            tears.add(Tear.randomTear(leftEyeX,leftEyeY));
+            tears.add(Tear.randomTear(leftEyeX,leftEyeY));// add two tears every frame
             tears.add(Tear.randomTear(rightEyeX,rightEyeY));
             for(int j=0;j<tears.size();j++){
                 Tear t=tears.get(j);
@@ -75,9 +76,6 @@ public class Civet{
         gif.close();
     }
     private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit,long time)throws java.io.IOException{
-        int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
-        int rightCheekX=1400,rightCheekY=690,leftCheekX=800,leftCheekY=780;
-        int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
         int sparkleNumber=6;
         Graphics g=civet.getGraphics();
         centeredOutlinedText(g,"ZKK har gått plus "+Kaffeligan.CSEKtoString(profit),width,0,100);
@@ -215,6 +213,7 @@ public class Civet{
             }
         }
         public void paint(java.awt.Graphics g){
+            ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.5F));
             g.drawImage(rotate(tear,ang-Math.PI/2),(int)(x+0.5)-tearHeight/2,(int)(y+0.5)-tearHeight/2,null);
         }
         public void tick(){
