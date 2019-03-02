@@ -15,6 +15,7 @@ public class GUI extends JFrame{
     public void config(){// the config file can be used to change global variables, \n separated values
         try{
             BufferedReader in=new BufferedReader(new FileReader(configPath));
+            Civet.dateIndex=Integer.parseInt(in.readLine());
             Kaffeligan.nameIndex=Integer.parseInt(in.readLine());
             Kaffeligan.paidIndex=Integer.parseInt(in.readLine());
             Civet.balanceIndex=Integer.parseInt(in.readLine());
@@ -132,7 +133,7 @@ public class GUI extends JFrame{
     }
     public File selectCSV(){
         JFileChooser chooser=new JFileChooser();
-        FileNameExtensionFilter filter=new FileNameExtensionFilter("","csv");
+        FileNameExtensionFilter filter=new FileNameExtensionFilter("Supported Files","csv");
         chooser.setFileFilter(filter);
         int result=chooser.showOpenDialog(this);
         if(result==JFileChooser.APPROVE_OPTION){
@@ -142,6 +143,8 @@ public class GUI extends JFrame{
     }
     public File selectOutput(){
         JFileChooser chooser=new JFileChooser();
+        FileNameExtensionFilter filter=new FileNameExtensionFilter("Supported Files","png","jpg","gif");
+        chooser.setFileFilter(filter);
         int result=chooser.showSaveDialog(this);
         if(result==JFileChooser.APPROVE_OPTION){
             return chooser.getSelectedFile();

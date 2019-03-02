@@ -6,35 +6,48 @@ import java.awt.Color;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 public class Civet{
-    protected static int balanceIndex=5;// index of balance in csv file
-    protected static int sadnessLimit=100000,startingBalance=200000;// amount of öre considered a significant loss and starting balance
+    final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;
+    protected static int dateIndex=0,balanceIndex=5;// index of balance in csv file
     protected static int fps=5,duration=5;// duration in seconds
     protected static String civetPath="dependencies/civet.png";
     protected static String tearPath="dependencies/tear.png";
     public static void writeGIF(String outPath,String inPath)throws java.io.IOException{
         BufferedReader in=new BufferedReader(new FileReader(inPath));
-        String mem=null,line;
+        String line=in.readLine();// header
+        line=in.readLine();// oldest entry
+        String mem=line;
+        long oldDate=extractDate(line);
+        int oldBalance=extractBalance(line);
         while((line=in.readLine())!=null){
             mem=line;// find the last line of the file
         }
-        String balanceString=mem.split(";")[balanceIndex];
-        String[] denom=balanceString.split(",");// split into kr and öre, then parse separately and recombine
-        int balance=Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
+        long newDate=extractDate(mem);
+        int newBalance=extractBalance(mem);
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(new File(civetPath));
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,false);
-        if(balance<=sadnessLimit){// significant loss
-            sadCivet(gif,civet,startingBalance-balance);
+        if(newBalance<oldBalance){// loss
+            sadCivet(gif,civet,oldBalance-newBalance,newDate-oldDate);
         }
-        else if(balance>startingBalance){// any profit
-            happyCivet(gif,civet,balance-startingBalance);
+        else if(newBalance>oldBalance){// gain
+            happyCivet(gif,civet,newBalance-oldBalance,newDate-oldDate);
         }
     }
-    private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit)throws java.io.IOException{
+    private static long extractDate(String line){// date in milliseconds since the epoch
+        String[] date=line.split(";")[dateIndex].split("-");
+        return new GregorianCalendar(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])).getTimeInMillis();
+    }
+    private static int extractBalance(String line){// finds balance in CSEK
+        String balanceString=line.split(";")[balanceIndex];
+        String[] denom=balanceString.split(",");// split into kr and öre, then parse separately and recombine
+        return Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
+    }
+    private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{
         int width=1920,height=1080,rightEyeX=1310,rightEyeY=580,leftEyeX=886,leftEyeY=650;
         int tearSpreadX=41,tearSpreadY=21;
         java.awt.Graphics g=civet.getGraphics();
         centeredOutlinedText(g,"ZKK har gått back "+Kaffeligan.CSEKtoString(deficit),width,0,100);
+        centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
         gif.writeToSequence(civet);
         ArrayList<Tear> tears=new ArrayList<Tear>();
         for(int i=1;i<duration*fps;i++){
@@ -61,8 +74,45 @@ public class Civet{
         }
         gif.close();
     }
-    private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit){
+    private static void happyCivet(GifSequenceWriter gif,BufferedImage civet,int profit,long time){
         
+    }
+    public static String formatTime(long ms){// in swedish
+        String months=(int)(ms/msmonth)+(ms<2*msmonth?" månad":" månader");
+        ms%=msmonth;
+        String weeks=(int)(ms/msweek)+(ms<2*msweek?" vecka":" veckor");
+        ms%=msweek;
+        String days=(int)(ms/msday)+(ms<2*msday?" dag":" dagar");
+        String result="";
+        if(months.matches("[^0].*")){
+            result=months;
+            if(weeks.matches("[^0].*") && days.matches("[^0].*")){
+                result+=", "+weeks+" & "+days;
+            }
+            else if(weeks.matches("[^0].*") ^ days.matches("[^0].*")){
+                result+=" & ";
+                if(weeks.matches("[^0].*")){
+                    result+=weeks;
+                }
+                else{
+                    result+=days;
+                }
+            }
+        }
+        else{
+            if(weeks.matches("[^0].*") && days.matches("[^0].*")){
+                result=weeks+" & "+days;
+            }
+            else{
+                if(weeks.matches("[^0].*")){
+                    result=weeks;
+                }
+                else{
+                    result=days;
+                }
+            }
+        }
+        return result;
     }
     private static void changeBrightness(BufferedImage image,float brightnessMultiplier){
         WritableRaster raster=image.getRaster();// get image as raster and preallocate arrays
