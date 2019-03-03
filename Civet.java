@@ -32,7 +32,7 @@ public class Civet{
         int newBalance=extractBalance(mem);
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(new File(civetPath));
-        GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,false);
+        GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
         if(newBalance<oldBalance){// loss
             sadCivet(gif,civet,oldBalance-newBalance,newDate-oldDate);
         }

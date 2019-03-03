@@ -77,8 +77,7 @@ public class GUI extends JFrame{
                     worked=false;
                 }
                 if(worked){
-                    setVisible(false);
-                    dispose();
+                    out.setText("Done");
                 }
             }
         });
