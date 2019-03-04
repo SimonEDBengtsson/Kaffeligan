@@ -5,50 +5,22 @@ import java.awt.image.*;
 import javax.imageio.*;
 public class Kaffeligan{
     final static int winners=3;
-    static int nameIndex=1,paidIndex=4;
     static String backgroundImagePath="dependencies/background.png";
     static String logoImagePath="dependencies/logo.png";
     static String bronzeImagePath="dependencies/bronze.png";
     static String silverImagePath="dependencies/silver.png";
     static String goldImagePath="dependencies/gold.png";
     static String lp="LP1";
-    public static Customer[] read(String path)throws java.io.IOException{// Customer is a wrapper class for a name and paid amount with the Comparable interface
-        BufferedReader in=new BufferedReader(new FileReader(path));// read in the csv file
-        ArrayList<Customer> customers=new ArrayList<Customer>(3);
-        String line=in.readLine();// this line is the header and can thus be discarded
-        while((line=in.readLine())!=null){
-            String[] temp=line.split(";");
-            temp[nameIndex]=temp[nameIndex].replaceAll("Swish\\s*","");// remove "Swish"
-            temp[nameIndex]=temp[nameIndex].replaceAll("([^,]+),([^,]+)","$2 $1");// put first- before last name
-            temp[nameIndex]=temp[nameIndex].replaceAll("^\\s*","");// remove leading spaces
-            temp[paidIndex]=temp[paidIndex].replaceAll("\\D","");// remove all but digits
-            int paid=Integer.parseInt(temp[paidIndex]);// the payment sum in "öre" to avoid floating point numbers
-            boolean exists=false;
-            for(Customer c:customers){// check if the customer exists, if so add paid to their total otherwise create them and add to the arraylist
-                if(c.name.equals(temp[nameIndex])){
-                    c.paid+=paid;
-                    exists=true;
-                    break;
-                }
-            }
-            if(!exists){
-                customers.add(new Customer(paid,temp[nameIndex]));
-            }
-        }
-        Customer[] ca=customers.toArray(new Customer[1]);// turn the arraylist into an array for sort to work
-        Arrays.sort(ca);// the Comparable interface is implemented to put the highest paid in the beginning of the list
-        return ca;
+    public static void writePNG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
+        ImageIO.write(createBufferedImage(cd.customers),"png",new File(path));
     }
-    public static void writePNG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
-        ImageIO.write(createBufferedImage(ca),"png",new File(path));
-    }
-    public static void writeJPG(String path,Customer[] ca)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
-        BufferedImage argb=createBufferedImage(ca);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
+    public static void writeJPG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
+        BufferedImage argb=createBufferedImage(cd.customers);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
         BufferedImage bgr=new BufferedImage(argb.getWidth(),argb.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
         bgr.getGraphics().drawImage(argb,0,0,null);
         ImageIO.write(bgr,"jpeg",new File(path));
     }
-    private static BufferedImage createBufferedImage(Customer[] ca)throws java.io.IOException{
+    private static BufferedImage createBufferedImage(CustomerData.Customer[] ca)throws java.io.IOException{
         int width=1920,height=1080;// resolution
         int logoLeftMargin=100,logoRightPadding=40;// graphical design parameters
         int medalLeftMargin=190,medalRightPadding=40,medalTopPadding=20;
@@ -117,8 +89,8 @@ public class Kaffeligan{
         g.setColor(new java.awt.Color(250,250,250));
         g.drawString(text,x,y);// put the white text on top
     }
-    private static Customer[] decideWinners(Customer[] ca){
-        Customer[] result=new Customer[winners];
+    private static CustomerData.Customer[] decideWinners(CustomerData.Customer[] ca){
+        CustomerData.Customer[] result=new CustomerData.Customer[winners];
         int decided=0;
         int i=0;
         while(decided<winners){
@@ -129,7 +101,7 @@ public class Kaffeligan{
                 }
             }
             catch(IndexOutOfBoundsException x){}// can happen for short arrays, or arrays with low spread
-            Customer[] temp=new Customer[i-mem+1];// array for all customers of same rank
+            CustomerData.Customer[] temp=new CustomerData.Customer[i-mem+1];// array for all customers of same rank
             for(int j=mem;j<=i;j++){
                 temp[j-mem]=ca[j];
             }
@@ -156,32 +128,6 @@ public class Kaffeligan{
             temp=array[index];
             array[index]=array[i];
             array[i]=temp;
-        }
-    }
-    public static class Customer implements Comparable<Customer>{// wrapper for name and paid amount, lowest paid amount is biggest for compareTo()
-        int paid;
-        String name;
-        public Customer(int p,String n){
-            paid=p;
-            name=n;
-        }
-        public int compareTo(Customer c){
-            if(c.paid<paid){
-                return -1;
-            }
-            else if(c.paid==paid){
-                return 0;
-            }
-            return 1;
-        }
-        public void print(){
-            System.out.println(name+": "+paid+" öre");
-        }
-        public void print(PrintWriter out){
-            out.print(name+",");
-        }
-        public void println(PrintWriter out){
-            out.println(name+";"+paid);
         }
     }
 }

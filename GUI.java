@@ -15,10 +15,10 @@ public class GUI extends JFrame{
     public void config(){// the config file can be used to change global variables, \n separated values
         try{
             BufferedReader in=new BufferedReader(new FileReader(configPath));
-            Civet.dateIndex=Integer.parseInt(in.readLine());
-            Kaffeligan.nameIndex=Integer.parseInt(in.readLine());
-            Kaffeligan.paidIndex=Integer.parseInt(in.readLine());
-            Civet.balanceIndex=Integer.parseInt(in.readLine());
+            CustomerData.dateIndex=Integer.parseInt(in.readLine());
+            CustomerData.nameIndex=Integer.parseInt(in.readLine());
+            CustomerData.paidIndex=Integer.parseInt(in.readLine());
+            CustomerData.balanceIndex=Integer.parseInt(in.readLine());
             Kaffeligan.backgroundImagePath=in.readLine();
             Kaffeligan.logoImagePath=in.readLine();
             Kaffeligan.goldImagePath=in.readLine();
@@ -58,14 +58,15 @@ public class GUI extends JFrame{
                 boolean worked=true;
                 Kaffeligan.lp=version.getText();
                 try{
+                    CustomerData cd=new CustomerData(in.getText(),CustomerData.Bank.ICABANKEN);
                     if(out.getText().matches(".*\\.png$")){
-                        Kaffeligan.writePNG(out.getText(),Kaffeligan.read(in.getText()));
+                        Kaffeligan.writePNG(out.getText(),cd);
                     }
                     else if(out.getText().matches(".*\\.jpg$")){
-                        Kaffeligan.writeJPG(out.getText(),Kaffeligan.read(in.getText()));
+                        Kaffeligan.writeJPG(out.getText(),cd);
                     }
                     else if(out.getText().matches(".*\\.gif$")){
-                        Civet.writeGIF(out.getText(),in.getText());
+                        Civet.writeGIF(out.getText(),cd);
                     }
                     else{
                         out.setText("Invalid file type");

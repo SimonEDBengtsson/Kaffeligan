@@ -12,42 +12,21 @@ public class Civet{
     protected static int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for the eyes
     protected static int rightCheekX=1400,rightCheekY=700,leftCheekX=800,leftCheekY=780;
     protected static int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
-    protected static int dateIndex=0,balanceIndex=5;// index of balance in csv file
     protected static int fps=5,duration=5;// duration in seconds
     protected static String civetPath="dependencies/civet.png";
     protected static String tearPath="dependencies/tear.png";
     protected static String sparklePath="dependencies/sparkle.png";
     protected static String smilePath="dependencies/mouth.png";
-    public static void writeGIF(String outPath,String inPath)throws java.io.IOException{
-        BufferedReader in=new BufferedReader(new FileReader(inPath));
-        String line=in.readLine();// header
-        line=in.readLine();// oldest entry
-        String mem=line;
-        long oldDate=extractDate(line);
-        int oldBalance=extractBalance(line);
-        while((line=in.readLine())!=null){
-            mem=line;// find the last line of the file
-        }
-        long newDate=extractDate(mem);
-        int newBalance=extractBalance(mem);
+    public static void writeGIF(String outPath,CustomerData cd)throws java.io.IOException{
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(new File(civetPath));
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
-        if(newBalance<oldBalance){// loss
-            sadCivet(gif,civet,oldBalance-newBalance,newDate-oldDate);
+        if(cd.startBalance<cd.endBalance){// loss
+            sadCivet(gif,civet,cd.endBalance-cd.startBalance,cd.startDate-cd.endDate);
         }
-        else if(newBalance>oldBalance){// gain
-            happyCivet(gif,civet,newBalance-oldBalance,newDate-oldDate);
+        else if(cd.startBalance>cd.endBalance){// gain
+            happyCivet(gif,civet,cd.startBalance-cd.endBalance,cd.startDate-cd.endDate);
         }
-    }
-    private static long extractDate(String line){// date in milliseconds since the epoch
-        String[] date=line.split(";")[dateIndex].split("-");// yyyy-mm-dd;other;stuff;...
-        return new GregorianCalendar(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])).getTimeInMillis();
-    }
-    private static int extractBalance(String line){// finds balance in CSEK
-        String balanceString=line.split(";")[balanceIndex];
-        String[] denom=balanceString.split(",");// split into kr and öre, then parse separately and recombine
-        return Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{
         java.awt.Graphics g=civet.getGraphics();
