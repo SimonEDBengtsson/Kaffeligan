@@ -5,10 +5,11 @@ import java.awt.event.*;
 import java.io.*;
 public class GUI extends JFrame{
     final static String configPath="dependencies/kaffeligan.config";
-    JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):");
+    JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which format? ");
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
     JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Apply");
+    JComboBox bankChooser=new JComboBox(CustomerData.Bank.values());
     public static void main(String[] args){
         new GUI();
     }
@@ -58,7 +59,7 @@ public class GUI extends JFrame{
                 boolean worked=true;
                 Kaffeligan.lp=version.getText();
                 try{
-                    CustomerData cd=new CustomerData(in.getText(),CustomerData.Bank.ICABANKEN);
+                    CustomerData cd=new CustomerData(in.getText(),(CustomerData.Bank)bankChooser.getSelectedItem());
                     if(out.getText().matches(".*\\.png$")){
                         Kaffeligan.writePNG(out.getText(),cd);
                     }
@@ -92,10 +93,12 @@ public class GUI extends JFrame{
            layout.createSequentialGroup()
               .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                    .addComponent(labelIn)
-                   .addComponent(labelOut))
+                   .addComponent(labelOut)
+                   .addComponent(format))
               .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                    .addComponent(in)
-                   .addComponent(out))
+                   .addComponent(out)
+                   .addComponent(bankChooser))
               .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
                    .addComponent(browseIn)
                    .addComponent(browseOut))
@@ -106,6 +109,10 @@ public class GUI extends JFrame{
                 .addComponent(labelIn)
                 .addComponent(in)
                 .addComponent(browseIn)
+            )
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(format)
+                .addComponent(bankChooser)
             )
             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(labelOut)

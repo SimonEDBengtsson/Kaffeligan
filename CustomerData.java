@@ -8,20 +8,24 @@ public class CustomerData{
     long startDate;// ms
     long endDate;
     public enum Bank{
-        ICABANKEN,HANDELSBANKEN,SWEDBANK;
-    }
-    public CustomerData(String path,Bank bank){
-        try{
-            switch(bank){
-                case ICABANKEN:     readICA(path);
-                                    break;
-                case HANDELSBANKEN: undefined();
-                                    break;
-                case SWEDBANK:      undefined();
-            }
+        ICABANKEN("ICA Banken"),HANDELSBANKEN("Handelsbanken"),SWEDBANK("Swedbank");
+        private String name;
+        private Bank(String name){
+            this.name=name;
         }
-        catch(IOException x){
-            undefined();
+        @Override
+        public String toString(){
+            return name;
+        }
+    }
+    public CustomerData(String path,Bank bank)throws IOException{
+        switch(bank){
+            case ICABANKEN:     readICA(path);
+                                break;
+            case HANDELSBANKEN: undefined();
+                                break;
+            case SWEDBANK:      undefined();
+                                break;
         }
     }
     public void readICA(String path)throws IOException{// Customer is a wrapper class for a name and paid amount with the Comparable interface

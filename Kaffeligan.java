@@ -66,8 +66,8 @@ public class Kaffeligan{
     }
     public static void shadowText(java.awt.Graphics g,String text,int x,int y,int fontSize){// writes white text with shadow
         java.awt.Font font=new java.awt.Font("Impact",java.awt.Font.BOLD,fontSize);
-        y+=g.getFontMetrics(font).getAscent();
         g.setFont(font);
+        y+=g.getFontMetrics().getAscent();
         g.setColor(new java.awt.Color(20,20,20));
         g.drawString(text,x+fontSize/10,y+fontSize/10);// write black text diagonlly down to the right
         g.setColor(new java.awt.Color(250,250,250));
