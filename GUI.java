@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 public class GUI extends JFrame{
-    final static String configPath="dependencies/kaffeligan.config";
+    final static String configPath="resources/kaffeligan.config";
     JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which format? ");
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
@@ -13,9 +13,12 @@ public class GUI extends JFrame{
     public static void main(String[] args){
         new GUI();
     }
+    public static InputStream load(String path){
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+    }
     public void config(){// the config file can be used to change global variables, \n separated values
         try{
-            BufferedReader in=new BufferedReader(new FileReader(configPath));
+            BufferedReader in=new BufferedReader(new InputStreamReader(load(configPath)));
             CustomerData.dateIndex=Integer.parseInt(in.readLine());
             CustomerData.nameIndex=Integer.parseInt(in.readLine());
             CustomerData.paidIndex=Integer.parseInt(in.readLine());
@@ -32,7 +35,7 @@ public class GUI extends JFrame{
             Civet.fps=Integer.parseInt(in.readLine());
             Civet.duration=Integer.parseInt(in.readLine());
         }
-        catch(java.io.IOException t){
+        catch(Throwable t){
             in.setText("Config file not found, standard settings will be used.");
         }
     }
@@ -74,8 +77,8 @@ public class GUI extends JFrame{
                         worked=false;
                     }
                 }
-                catch(IOException x){
-                    out.setText("IOException");
+                catch(Throwable t){
+                    out.setText(t.toString());
                     worked=false;
                 }
                 if(worked){

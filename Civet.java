@@ -13,13 +13,13 @@ public class Civet{
     protected static int rightCheekX=1400,rightCheekY=700,leftCheekX=800,leftCheekY=780;
     protected static int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;
     protected static int fps=5,duration=5;// duration in seconds
-    protected static String civetPath="dependencies/civet.png";
-    protected static String tearPath="dependencies/tear.png";
-    protected static String sparklePath="dependencies/sparkle.png";
-    protected static String smilePath="dependencies/mouth.png";
+    protected static String civetPath="resources/civet.png";
+    protected static String tearPath="resources/tear.png";
+    protected static String sparklePath="resources/sparkle.png";
+    protected static String smilePath="resources/mouth.png";
     public static void writeGIF(String outPath,CustomerData cd)throws java.io.IOException{
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
-        BufferedImage civet=ImageIO.read(new File(civetPath));
+        BufferedImage civet=ImageIO.read(GUI.load(civetPath));
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
         if(cd.startBalance<cd.endBalance){// loss
             sadCivet(gif,civet,cd.endBalance-cd.startBalance,cd.startDate-cd.endDate);
@@ -59,7 +59,7 @@ public class Civet{
         Graphics g=civet.getGraphics();
         centeredOutlinedText(g,"ZKK har gått plus "+Kaffeligan.CSEKtoString(profit),width,0,100);
         centeredOutlinedText(g,"på "+formatTime(time),width,g.getFontMetrics().getHeight(),100);
-        BufferedImage smile=ImageIO.read(new File(smilePath));
+        BufferedImage smile=ImageIO.read(GUI.load(smilePath));
         g.drawImage(smile.getScaledInstance(smileWidth,smileHeight,Image.SCALE_SMOOTH),smileX-smileWidth/2,smileY-smileHeight/2,null);
         blush(g,rightCheekX,rightCheekY,0.3F);
         blush(g,leftCheekX,leftCheekY,0.6F);
@@ -159,7 +159,7 @@ public class Civet{
         private static BufferedImage tear;
         static{
             try{
-                BufferedImage sourceTear=ImageIO.read(new File(tearPath));
+                BufferedImage sourceTear=ImageIO.read(GUI.load(tearPath));
                 tear=new BufferedImage(tearHeight,tearHeight,sourceTear.getType());
                 tear.getGraphics()
                 .drawImage(
@@ -212,7 +212,7 @@ public class Civet{
         private static BufferedImage sourceSparkle;
         static{
             try{
-                sourceSparkle=ImageIO.read(new File(sparklePath));
+                sourceSparkle=ImageIO.read(GUI.load(sparklePath));
             }
             catch(IOException x){
                 sourceSparkle=null;

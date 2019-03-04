@@ -5,11 +5,11 @@ import java.awt.image.*;
 import javax.imageio.*;
 public class Kaffeligan{
     final static int winners=3;
-    static String backgroundImagePath="dependencies/background.png";
-    static String logoImagePath="dependencies/logo.png";
-    static String bronzeImagePath="dependencies/bronze.png";
-    static String silverImagePath="dependencies/silver.png";
-    static String goldImagePath="dependencies/gold.png";
+    static String backgroundImagePath="resources/background.png";
+    static String logoImagePath="resources/logo.png";
+    static String bronzeImagePath="resources/bronze.png";
+    static String silverImagePath="resources/silver.png";
+    static String goldImagePath="resources/gold.png";
     static String lp="LP1";
     public static void writePNG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
         ImageIO.write(createBufferedImage(cd.customers),"png",new File(path));
@@ -28,11 +28,11 @@ public class Kaffeligan{
         int logoSize=300,medalWidth=120,medalHeight=200,headerSize,textSize;
         int headerFontSize=160,fontSize=90,headerDownShift=45,textDownShift=35;
         ca=decideWinners(ca);// decide which three are the winners and their rankings
-        BufferedImage background=ImageIO.read(new File(backgroundImagePath));// read in the graphical assets
-        BufferedImage logo=ImageIO.read(new File(logoImagePath));
-        BufferedImage bronze=ImageIO.read(new File(bronzeImagePath));
-        BufferedImage silver=ImageIO.read(new File(silverImagePath));
-        BufferedImage gold=ImageIO.read(new File(goldImagePath));
+        BufferedImage background=ImageIO.read(GUI.load(backgroundImagePath));// read in the graphical assets
+        BufferedImage logo=ImageIO.read(GUI.load(logoImagePath));
+        BufferedImage bronze=ImageIO.read(GUI.load(bronzeImagePath));
+        BufferedImage silver=ImageIO.read(GUI.load(silverImagePath));
+        BufferedImage gold=ImageIO.read(GUI.load(goldImagePath));
         BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
         java.awt.Graphics g=image.getGraphics();// start composing the picture, background, logo, header
         g.drawImage(background.getScaledInstance(width,height,Image.SCALE_SMOOTH),0,0,null);
