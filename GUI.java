@@ -41,6 +41,10 @@ public class GUI extends JFrame{
     }
     public GUI(){
         super("ZKK");
+        try{
+            setIconImage(javax.imageio.ImageIO.read(new File(Kaffeligan.logoImagePath)));
+        }
+        catch(IOException x){}
         browseIn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 File temp=selectCSV();

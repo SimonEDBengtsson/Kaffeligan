@@ -8,7 +8,9 @@ public class CustomerData{
     long startDate;// ms
     long endDate;
     public enum Bank{
-        ICABANKEN("ICA Banken"),HANDELSBANKEN("Handelsbanken"),SWEDBANK("Swedbank");
+        ICA("ICA Banken"),HANDELSBANKEN("Svenska Handelsbanken"),NORDEA("Nordea"),SEB("Svenska Enskilda Banken"),
+        SWEDBANK("Swedbank"),OKQ8("OK-Q8 Bank"),SKANDIA("Skandiabanken"),DANSKE("Danske Bank"),LÄNS("Länsförsäkringar Bank"),
+        SANTANDER("Santander Consumer Bank"),VOLVO("Volvofinans Bank"),IKANO("Ikano Bank"),KAUPTHING("Ålandsbanken");
         private String name;
         private Bank(String name){
             this.name=name;
@@ -18,14 +20,11 @@ public class CustomerData{
             return name;
         }
     }
-    public CustomerData(String path,Bank bank)throws IOException{
+    public CustomerData(String path,Bank bank)throws Exception{
         switch(bank){
-            case ICABANKEN:     readICA(path);
-                                break;
-            case HANDELSBANKEN: undefined();
-                                break;
-            case SWEDBANK:      undefined();
-                                break;
+            case ICA:   readICA(path);
+                        break;
+            default:    throw new Exception("Bank not supported");
         }
     }
     public void readICA(String path)throws IOException{// Customer is a wrapper class for a name and paid amount with the Comparable interface
