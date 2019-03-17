@@ -27,31 +27,41 @@ public class Kaffeligan{
         int topMargin=40,amountWidth=500;
         int logoSize=300,medalWidth=120,medalHeight=200,headerSize,textSize;
         int headerFontSize=160,fontSize=90,headerDownShift=45,textDownShift=35;
+        
         ca=decideWinners(ca);// decide which three are the winners and their rankings
+        
         BufferedImage background=ImageIO.read(GUI.load(backgroundImagePath));// read in the graphical assets
         BufferedImage logo=ImageIO.read(GUI.load(logoImagePath));
         BufferedImage bronze=ImageIO.read(GUI.load(bronzeImagePath));
         BufferedImage silver=ImageIO.read(GUI.load(silverImagePath));
         BufferedImage gold=ImageIO.read(GUI.load(goldImagePath));
         BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+        
         java.awt.Graphics g=image.getGraphics();// start composing the picture, background, logo, header
         g.drawImage(background.getScaledInstance(width,height,Image.SCALE_SMOOTH),0,0,null);
         g.drawImage(logo.getScaledInstance(logoSize,logoSize,Image.SCALE_SMOOTH),logoLeftMargin,topMargin,null);
         shadowText(g,"Kaffeligan "+lp,logoLeftMargin+logoSize+logoRightPadding,topMargin+headerDownShift,headerFontSize);
+        
         int amountOffset=width-amountWidth;// vertical baseline for paid amount
         int x=medalLeftMargin+medalWidth+medalRightPadding;// vertical baseline for names
         int y=topMargin+logoSize+medalTopPadding;// horizontal baseline for gold medal
-        g.drawImage(gold.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);// add medal, name and paid amount
-        outlinedText(g,ca[0].name,x,y+textDownShift,fontSize);
-        outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textDownShift,fontSize);
+        if(ca.length>0){// add medal, name and paid amount for first place
+            g.drawImage(gold.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            outlinedText(g,ca[0].name,x,y+textDownShift,fontSize);
+            outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textDownShift,fontSize);
+        }
         y+=medalHeight+medalTopPadding;// move horizontal baseline down to silver medal and repeat above steps for runner-up
-        g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
-        outlinedText(g,ca[1].name,x,y+textDownShift,fontSize);
-        outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textDownShift,fontSize);
+        if(ca.length>1){// second place
+            g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            outlinedText(g,ca[1].name,x,y+textDownShift,fontSize);
+            outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textDownShift,fontSize);
+        }
         y+=medalHeight+medalTopPadding;// finally do the bronze medalist
-        g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
-        outlinedText(g,ca[2].name,x,y+textDownShift,fontSize);
-        outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textDownShift,fontSize);
+        if(ca.length>2){// third place
+            g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            outlinedText(g,ca[2].name,x,y+textDownShift,fontSize);
+            outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textDownShift,fontSize);
+        }
         return image;
     }
     public static String CSEKtoString(int csek){
@@ -90,10 +100,10 @@ public class Kaffeligan{
         g.drawString(text,x,y);// put the white text on top
     }
     private static CustomerData.Customer[] decideWinners(CustomerData.Customer[] ca){
-        CustomerData.Customer[] result=new CustomerData.Customer[winners];
+        CustomerData.Customer[] result=new CustomerData.Customer[winners<ca.length?winners:ca.length];
         int decided=0;
         int i=0;
-        while(decided<winners){
+        while(decided<winners && decided<ca.length){
             int mem=i;
             try{
                 while(ca[i].paid==ca[i+1].paid){// mem is the index of the first in the rank, i is the last

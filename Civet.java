@@ -83,11 +83,18 @@ public class Civet{
         gif.close();
     }
     public static String formatTime(long ms){// in swedish
-        String months=(int)(ms/msmonth)+(ms<2*msmonth?" månad":" månader");
+        int monthnum=(int)(ms/msmonth);// months are not actually constant length, close enough
         ms%=msmonth;
-        String weeks=(int)(ms/msweek)+(ms<2*msweek?" vecka":" veckor");
+        int weeknum=(int)(ms/msweek);
         ms%=msweek;
-        String days=(int)(ms/msday)+(ms<2*msday?" dag":" dagar");
+        int daynum=(int)(ms/msday+1);// round up
+        if(daynum>6){
+            daynum-=7;
+            weeknum++;
+        }
+        String months=monthnum+(ms<2*msmonth?" månad":" månader");
+        String weeks=weeknum+(ms<2*msweek?" vecka":" veckor");
+        String days=daynum+(ms<2*msday?" dag":" dagar");
         String result="";
         if(months.matches("[^0].*")){
             result=months;
