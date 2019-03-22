@@ -92,18 +92,18 @@ public class Civet{
             daynum-=7;
             weeknum++;
         }
-        String months=monthnum+(ms<2*msmonth?" månad":" månader");
-        String weeks=weeknum+(ms<2*msweek?" vecka":" veckor");
-        String days=daynum+(ms<2*msday?" dag":" dagar");
+        String months=monthnum+(monthnum==1?" månad":" månader");
+        String weeks=weeknum+(weeknum==1?" vecka":" veckor");
+        String days=daynum+(daynum==1?" dag":" dagar");
         String result="";
-        if(months.matches("[^0].*")){
+        if(monthnum>0){
             result=months;
-            if(weeks.matches("[^0].*") && days.matches("[^0].*")){
+            if(weeknum>0 && daynum>0){
                 result+=", "+weeks+" & "+days;
             }
-            else if(weeks.matches("[^0].*") ^ days.matches("[^0].*")){
+            else if(weeknum>0 ^ daynum>0){
                 result+=" & ";
-                if(weeks.matches("[^0].*")){
+                if(weeknum>0){
                     result+=weeks;
                 }
                 else{
@@ -112,11 +112,11 @@ public class Civet{
             }
         }
         else{
-            if(weeks.matches("[^0].*") && days.matches("[^0].*")){
+            if(weeknum>0 && daynum>0){
                 result=weeks+" & "+days;
             }
             else{
-                if(weeks.matches("[^0].*")){
+                if(weeknum>0){
                     result=weeks;
                 }
                 else{
