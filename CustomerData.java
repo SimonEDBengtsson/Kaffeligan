@@ -1,10 +1,12 @@
 import java.io.*;
 import java.util.*;
 public class CustomerData{
+    static int initialCapital=200000;
     static int dateIndex=0,nameIndex=1,paidIndex=4,balanceIndex=5;// indeces for icabanken
     Customer[] customers;
     int startBalance;// CSEK
     int endBalance;
+    int netProfit;
     long startDate;// ms
     long endDate;
     public enum Bank{
@@ -57,6 +59,7 @@ public class CustomerData{
         }while((line=in.readLine())!=null);
         startDate=extractDateICA(mem);
         startBalance=extractBalanceICA(mem);
+        netProfit=initialCapital-endBalance;
         this.customers=customers.toArray(new Customer[1]);// turn the arraylist into an array for sort to work
         Arrays.sort(this.customers);// the Comparable interface is implemented to put the highest paid in the beginning of the list
     }
