@@ -4,41 +4,72 @@ import java.io.*;
 import java.util.*;
 import java.text.*;
 public class BalanceGraph extends JPanel{
-    static int width=1920,height=1080;
+    static int width=1366,height=768,horizontalLines=4,verticalLines=6;
     Transaction[] transactions;
     long startDate,endDate;
-    int startBalance,endBalance;
+    int maxBalance,minBalance;
     public static void test(){
         JFrame frame=new JFrame();
-        frame.add(new BalanceGraph("/home/simon/Downloads/Kontohandelser2019-04-01.csv",CustomerData.Bank.ICA));
+        frame.add(new BalanceGraph("/home/simon/Downloads/Kontohandelser2019-04-01(1).csv",CustomerData.Bank.ICA));
         frame.pack();
         frame.setVisible(true);
     }
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        long duration=endDate-startDate;
+        int balanceSpan=maxBalance-minBalance;
+        double pixperms=(double)width/duration;
+        double pixpercsek=(double)height/balanceSpan;
+        {
+            g.setColor(Color.DARK_GRAY);
+            int[] x=new int[transactions.length];
+            int[] y=new int[transactions.length];
+            for(int i=0;i<transactions.length;i++){
+                x[i]=(int)(pixperms*(transactions[i].date-startDate)+0.5);
+                y[i]=height-(int)(pixpercsek*(transactions[i].balance-minBalance)+0.5);
+            }
+            g.drawPolyline(x,y,x.length);
+        }
+        for(int i=0;i<horizontalLines;i++){
+            double ratio=(double)(i+1)/(horizontalLines+1);
+            int y=height-(int)(ratio*height+0.5);
+            g.setColor(Color.BLACK);
+            g.drawString(""+Kaffeligan.CSEKtoString(minBalance+(int)(balanceSpan*ratio+0.5)),0,y);
+            g.setColor(Color.LIGHT_GRAY);
+            g.drawPolyline(new int[]{0,width},new int[]{y,y},2);
+        }
+        for(int i=0;i<verticalLines;i++){
+            double ratio=(double)(i+1)/(verticalLines+1);
+            int x=(int)(width*ratio+0.5);
+            g.setColor(Color.BLACK);
+            g.drawString(formatEpoch(startDate+(long)(duration*ratio),"yyyy-MM-dd"),x,g.getFontMetrics().getAscent());
+            g.setColor(Color.LIGHT_GRAY);
+            g.drawPolyline(new int[]{x,x},new int[]{0,height},2);
+        }
+    }
     public BalanceGraph(String path,CustomerData.Bank bank){
         readTransactions(path,bank);
-        long duration=endDate-startDate;
-        int balanceChange=endBalance-startBalance<0?startBalance-endBalance:endBalance-startBalance;// |delta balance|
-        double pixperms=width/duration;
-        double pixpercsek=height/balanceChange;
         setPreferredSize(new Dimension(width,height));
-        Graphics g=getGraphics();
-        int[] x=new int[transactions.length];
-        int[] y=new int[transactions.length];
-        for(int i=0;i<transactions.length;i++){
-            x[i]=(int)(pixperms*(transactions[i].date-startDate)+0.5);
-            y[i]=(int)(pixpercsek*(transactions[i].balance-startBalance)+0.5);
-        }
-        g.drawPolyline(x,y,x.length);
     }
     public void readTransactions(String path,CustomerData.Bank bank){
         switch(bank){
             case ICA:   readTransactionsICA(path);
+                        break;
             default:    transactions=null;
         }
         startDate=transactions[0].date;
         endDate=transactions[transactions.length-1].date;
-        startBalance=transactions[0].balance;
-        endBalance=transactions[transactions.length-1].balance;
+        maxBalance=transactions[0].balance;// initialize for comparisson to work
+        minBalance=maxBalance;
+        for(Transaction t:transactions){
+            if(t.balance>maxBalance){
+                maxBalance=t.balance;
+            }
+            if(t.balance<minBalance){
+                minBalance=t.balance;
+            }
+        }
     }
     private void readTransactionsICA(String path){
         ArrayList<Transaction> transactions=new ArrayList<Transaction>();
