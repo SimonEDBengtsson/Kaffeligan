@@ -38,22 +38,18 @@ public class CustomerData{
         endBalance=extractBalanceICA(line);
         String mem=line;
         do{
-            String[] temp=line.split(";");
-            temp[nameIndex]=temp[nameIndex].replaceAll("Swish\\s*","");// remove "Swish"
-            temp[nameIndex]=temp[nameIndex].replaceAll("([^,]+),([^,]+)","$2 $1");// put first- before last name
-            temp[nameIndex]=temp[nameIndex].replaceAll("^\\s*","");// remove leading spaces
-            temp[paidIndex]=temp[paidIndex].replaceAll("\\D","");// remove all but digits
-            int paid=Integer.parseInt(temp[paidIndex]);// the payment sum in "öre" to avoid floating point numbers
+            String name=extractNameICA(line);
+            int paid=extractPaidICA(line);
             boolean exists=false;
             for(Customer c:customers){// check if the customer exists, if so add paid to their total otherwise create them and add to the arraylist
-                if(c.name.equals(temp[nameIndex])){
+                if(c.name.equals(name)){
                     c.paid+=paid;
                     exists=true;
                     break;
                 }
             }
             if(!exists){
-                customers.add(new Customer(paid,temp[nameIndex]));
+                customers.add(new Customer(paid,name));
             }
             mem=line;
         }while((line=in.readLine())!=null);
@@ -63,14 +59,24 @@ public class CustomerData{
         this.customers=customers.toArray(new Customer[1]);// turn the arraylist into an array for sort to work
         Arrays.sort(this.customers);// the Comparable interface is implemented to put the highest paid in the beginning of the list
     }
-    private long extractDateICA(String line){// date in milliseconds since the epoch
+    public static String extractNameICA(String line){// name of the person, designed for Swish payments
+        String temp=line.split(";")[nameIndex];
+        temp=temp.replaceAll("Swish\\s*","");// remove "Swish"
+        temp=temp.replaceAll("([^,]+),([^,]+)","$2 $1");// put first- before last name
+        temp=temp.replaceAll("^\\s*","");// remove leading spaces
+        return temp;
+    }
+    public static int extractPaidICA(String line){// finds amount paid in CSEK
+        String temp=line.split(";")[paidIndex];
+        return Integer.parseInt(temp.replaceAll("\\D",""));// remove all but digits
+    }
+    public static long extractDateICA(String line){// date in milliseconds since the epoch
         String[] date=line.split(";")[dateIndex].split("-");// yyyy-mm-dd;other;stuff;...
         return new GregorianCalendar(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])).getTimeInMillis();
     }
-    private int extractBalanceICA(String line){// finds balance in CSEK
-        String balanceString=line.split(";")[balanceIndex];
-        String[] denom=balanceString.split(",");// split into kr and öre, then parse separately and recombine
-        return Integer.parseInt(denom[0].replaceAll(" ",""))*100+Integer.parseInt(denom[1].replaceAll(" kr",""));
+    public static int extractBalanceICA(String line){// finds balance in CSEK
+        String temp=line.split(";")[balanceIndex];
+        return Integer.parseInt(temp.replaceAll("\\D",""));// remove all but digits
     }
     private void undefined(){
         customers=null;
