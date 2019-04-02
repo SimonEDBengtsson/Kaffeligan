@@ -9,12 +9,6 @@ public class BalanceGraph extends JPanel{
     Transaction[] transactions;
     long startDate,endDate;
     int maxBalance,minBalance;
-    public static void test(){
-        JFrame frame=new JFrame();
-        frame.add(new BalanceGraph("/home/simon/Downloads/Kontohandelser2019-04-01(1).csv",CustomerData.Bank.ICA));
-        frame.pack();
-        frame.setVisible(true);
-    }
     public static void writeGraph(String inPath,String outPath,CustomerData.Bank bank)throws Exception{
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
