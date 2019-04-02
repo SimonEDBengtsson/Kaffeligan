@@ -17,7 +17,10 @@ public class Civet{
     protected static String tearPath="resources/tear.png";
     protected static String sparklePath="resources/sparkle.png";
     protected static String smilePath="resources/mouth.png";
-    public static void writeGIF(String outPath,CustomerData cd)throws java.io.IOException{
+    public static void writeGIF(String outPath,CustomerData cd)throws Exception{
+        if(!outPath.matches(".*\\.gif$")){
+            throw new Exception("Filetype not supported");
+        }
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(GUI.load(civetPath));
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);

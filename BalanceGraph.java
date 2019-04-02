@@ -3,8 +3,9 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.awt.image.*;
 public class BalanceGraph extends JPanel{
-    static int width=1366,height=768,horizontalLines=4,verticalLines=6;
+    static int width=1920,height=1080,horizontalLines=4,verticalLines=6;
     Transaction[] transactions;
     long startDate,endDate;
     int maxBalance,minBalance;
@@ -13,6 +14,15 @@ public class BalanceGraph extends JPanel{
         frame.add(new BalanceGraph("/home/simon/Downloads/Kontohandelser2019-04-01(1).csv",CustomerData.Bank.ICA));
         frame.pack();
         frame.setVisible(true);
+    }
+    public static void writeGraph(String inPath,String outPath,CustomerData.Bank bank)throws Exception{
+        if(!outPath.matches(".*\\.png$")){
+            throw new Exception("Filetype not supported");
+        }
+        BalanceGraph bg=new BalanceGraph(inPath,bank);
+        BufferedImage bi=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+        bg.paintComponent(bi.getGraphics());
+        javax.imageio.ImageIO.write(bi,"png",new File(outPath));
     }
     @Override
     public void paintComponent(Graphics g){

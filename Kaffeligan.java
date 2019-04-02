@@ -11,6 +11,17 @@ public class Kaffeligan{
     static String silverImagePath="resources/silver.png";
     static String goldImagePath="resources/gold.png";
     static String lp="LP1";
+    public static void create(String path,CustomerData cd)throws Exception{
+        if(path.matches(".*\\.png$")){
+            writePNG(path,cd);
+        }
+        else if(path.matches(".*\\.jpg$")){
+            writeJPG(path,cd);
+        }
+        else{
+            throw new Exception("Filetype not supported");
+        }
+    }
     public static void writePNG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
         ImageIO.write(createBufferedImage(cd.customers),"png",new File(path));
     }

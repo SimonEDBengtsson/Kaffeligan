@@ -8,8 +8,19 @@ public class GUI extends JFrame{
     JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which format? ");
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
-    JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Apply");
-    JComboBox bankChooser=new JComboBox(CustomerData.Bank.values());
+    JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Create");
+    JComboBox bankChooser=new JComboBox(CustomerData.Bank.values()),outputTypeChooser=new JComboBox(OutputType.values());
+    public enum OutputType{
+        KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldo Graf");
+        String name;
+        private OutputType(String name){
+            this.name=name;
+        }
+        @Override
+        public String toString(){
+            return name;
+        }
+    }
     public static void main(String[] args){
         new GUI();
     }
@@ -65,20 +76,16 @@ public class GUI extends JFrame{
             public void actionPerformed(ActionEvent e){
                 boolean worked=true;
                 Kaffeligan.lp=version.getText();
+                String inPath=in.getText(),outPath=out.getText();
+                CustomerData.Bank bank=(CustomerData.Bank)bankChooser.getSelectedItem();
                 try{
-                    CustomerData cd=new CustomerData(in.getText(),(CustomerData.Bank)bankChooser.getSelectedItem());
-                    if(out.getText().matches(".*\\.png$")){
-                        Kaffeligan.writePNG(out.getText(),cd);
-                    }
-                    else if(out.getText().matches(".*\\.jpg$")){
-                        Kaffeligan.writeJPG(out.getText(),cd);
-                    }
-                    else if(out.getText().matches(".*\\.gif$")){
-                        Civet.writeGIF(out.getText(),cd);
-                    }
-                    else{
-                        out.setText("Invalid file type");
-                        worked=false;
+                    switch((OutputType)outputTypeChooser.getSelectedItem()){
+                        case KAFFELIGAN:    Kaffeligan.create(outPath,new CustomerData(inPath,bank));
+                                            break;
+                        case CIVET:         Civet.writeGIF(outPath,new CustomerData(inPath,bank));
+                                            break;
+                        case BALANCE_GRAPH: BalanceGraph.writeGraph(inPath,outPath,bank);
+                                            break;
                     }
                 }
                 catch(Throwable t){
@@ -143,9 +150,22 @@ public class GUI extends JFrame{
                 .addComponent(versionLabel)
                 .addComponent(version))
         );
+        JPanel bottom=new JPanel();
+        GroupLayout bottomLayout=new GroupLayout(bottom);
+        bottomLayout.setHorizontalGroup(
+            bottomLayout.createSequentialGroup()
+                .addComponent(apply)
+                .addComponent(outputTypeChooser)
+        );
+        bottomLayout.setVerticalGroup(
+            bottomLayout.createSequentialGroup()
+            .addGroup(bottomLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(apply)
+                .addComponent(outputTypeChooser))
+        );
         add(top);
         add(middle);
-        add(apply);
+        add(bottom);
         pack();
         config();
         setVisible(true);
