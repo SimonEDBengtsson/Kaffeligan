@@ -86,6 +86,9 @@ public class GUI extends JFrame{
                     worked=false;
                 }
                 if(worked){
+                    try{
+                        Desktop.getDesktop().browse(new File(out.getText().replaceAll("/[^/]*?$","")).toURI());
+                    }catch(Exception x){}
                     out.setText("Done");
                 }
             }

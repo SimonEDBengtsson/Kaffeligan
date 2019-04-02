@@ -21,16 +21,6 @@ public class BalanceGraph extends JPanel{
         int balanceSpan=maxBalance-minBalance;
         double pixperms=(double)width/duration;
         double pixpercsek=(double)height/balanceSpan;
-        {
-            g.setColor(Color.DARK_GRAY);
-            int[] x=new int[transactions.length];
-            int[] y=new int[transactions.length];
-            for(int i=0;i<transactions.length;i++){
-                x[i]=(int)(pixperms*(transactions[i].date-startDate)+0.5);
-                y[i]=height-(int)(pixpercsek*(transactions[i].balance-minBalance)+0.5);
-            }
-            g.drawPolyline(x,y,x.length);
-        }
         for(int i=0;i<horizontalLines;i++){
             double ratio=(double)(i+1)/(horizontalLines+1);
             int y=height-(int)(ratio*height+0.5);
@@ -46,6 +36,16 @@ public class BalanceGraph extends JPanel{
             g.drawString(formatEpoch(startDate+(long)(duration*ratio),"yyyy-MM-dd"),x,g.getFontMetrics().getAscent());
             g.setColor(Color.LIGHT_GRAY);
             g.drawPolyline(new int[]{x,x},new int[]{0,height},2);
+        }
+        {
+            g.setColor(Color.DARK_GRAY);
+            int[] x=new int[transactions.length];
+            int[] y=new int[transactions.length];
+            for(int i=0;i<transactions.length;i++){
+                x[i]=(int)(pixperms*(transactions[i].date-startDate)+0.5);
+                y[i]=height-(int)(pixpercsek*(transactions[i].balance-minBalance)+0.5);
+            }
+            g.drawPolyline(x,y,x.length);
         }
     }
     public BalanceGraph(String path,CustomerData.Bank bank){
