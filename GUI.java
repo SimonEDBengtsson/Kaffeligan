@@ -9,7 +9,8 @@ public class GUI extends JFrame{
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
     JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Create");
-    JComboBox bankChooser=new JComboBox(CustomerData.Bank.values()),outputTypeChooser=new JComboBox(OutputType.values());
+    JComboBox<CustomerData.Bank> bankChooser=new JComboBox<CustomerData.Bank>(CustomerData.Bank.values());
+    JDropDownButton<OutputType> create=new JDropDownButton<OutputType>(OutputType.values());
     public enum OutputType{// the types of file this program can create
         KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldo Graf");
         String name;
@@ -72,7 +73,7 @@ public class GUI extends JFrame{
                 }
             }
         });
-        apply.addActionListener(new ActionListener(){// try to create the file
+        create.addActionListener(new ActionListener(){// try to create the file
             public void actionPerformed(ActionEvent e){
                 boolean worked=true;
                 Kaffeligan.lp=version.getText();// static value for no reason in particular
@@ -80,7 +81,7 @@ public class GUI extends JFrame{
                 CustomerData.Bank bank=(CustomerData.Bank)bankChooser.getSelectedItem();
                 try{
                     CustomerData cd=new CustomerData(inPath,bank);// reads the input file
-                    switch((OutputType)outputTypeChooser.getSelectedItem()){
+                    switch(create.getSelectedItem()){
                         case KAFFELIGAN:    Kaffeligan.create(outPath,cd);
                                             break;
                         case CIVET:         Civet.writeGIF(outPath,cd);
@@ -154,14 +155,11 @@ public class GUI extends JFrame{
         GroupLayout bottomLayout=new GroupLayout(bottom);
         bottomLayout.setHorizontalGroup(
             bottomLayout.createSequentialGroup()
-                .addComponent(apply)
-                .addComponent(outputTypeChooser)
+                .addComponent(create)
         );
         bottomLayout.setVerticalGroup(
             bottomLayout.createSequentialGroup()
-            .addGroup(bottomLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(apply)
-                .addComponent(outputTypeChooser))
+                .addComponent(create)
         );
         add(top);
         add(middle);
