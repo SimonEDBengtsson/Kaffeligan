@@ -76,12 +76,20 @@ public class Kaffeligan{
         return image;
     }
     public static String CSEKtoString(int csek){// formats int representing CSEK (öre), ex 1906 -> 19,06:-
+        boolean negative=false;
+        if(csek<0){// handle negative values as positive, then put a minus in front at the end
+            negative=true;
+            csek*=-1;
+        }
         String kr=""+csek/100;
-        if((csek%=100)<10){
+        if((csek%=100)<10){// %100 leaves just the öre
             kr+=",0"+csek;
         }
         else{
             kr+=","+csek;
+        }
+        if(negative){
+            kr="-"+kr;
         }
         return kr+":-";
     }

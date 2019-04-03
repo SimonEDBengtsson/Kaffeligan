@@ -24,11 +24,11 @@ public class Civet{
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(GUI.load(civetPath));// background image
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
-        if(cd.startBalance<cd.endBalance){// loss, sad
-            sadCivet(gif,civet,cd.endBalance-cd.startBalance,cd.startDate-cd.endDate);
+        if(cd.startBalance>cd.endBalance){// loss, sad
+            sadCivet(gif,civet,cd.startBalance-cd.endBalance,cd.endDate-cd.startDate);
         }
-        else if(cd.startBalance>cd.endBalance){// gain, happy
-            happyCivet(gif,civet,cd.startBalance-cd.endBalance,cd.startDate-cd.endDate);
+        else if(cd.startBalance<cd.endBalance){// gain, happy
+            happyCivet(gif,civet,cd.endBalance-cd.startBalance,cd.endDate-cd.startDate);
         }
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{
