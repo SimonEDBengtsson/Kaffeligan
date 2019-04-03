@@ -11,8 +11,8 @@ public class Kaffeligan{
     static String silverImagePath="resources/silver.png";
     static String goldImagePath="resources/gold.png";
     static String lp="LP1";
-    public static void create(String path,CustomerData cd)throws Exception{
-        if(path.matches(".*\\.png$")){
+    public static void create(String path,CustomerData cd)throws Exception{// writes either a png or jpg at "path", generated from "cd"
+        if(path.matches(".*\\.png$")){// check the path to see what image type to use
             writePNG(path,cd);
         }
         else if(path.matches(".*\\.jpg$")){
@@ -75,7 +75,7 @@ public class Kaffeligan{
         }
         return image;
     }
-    public static String CSEKtoString(int csek){
+    public static String CSEKtoString(int csek){// formats int representing CSEK (öre), ex 1906 -> 19,06:-
         String kr=""+csek/100;
         if((csek%=100)<10){
             kr+=",0"+csek;
@@ -110,7 +110,7 @@ public class Kaffeligan{
         g.setColor(new java.awt.Color(250,250,250));
         g.drawString(text,x,y);// put the white text on top
     }
-    private static CustomerData.Customer[] decideWinners(CustomerData.Customer[] ca){
+    private static CustomerData.Customer[] decideWinners(CustomerData.Customer[] ca){// picks out the customers who have paid the most, randomizes ties
         CustomerData.Customer[] result=new CustomerData.Customer[winners<ca.length?winners:ca.length];
         int decided=0;
         int i=0;

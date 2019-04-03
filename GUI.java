@@ -10,7 +10,7 @@ public class GUI extends JFrame{
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
     JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Create");
     JComboBox bankChooser=new JComboBox(CustomerData.Bank.values()),outputTypeChooser=new JComboBox(OutputType.values());
-    public enum OutputType{
+    public enum OutputType{// the types of file this program can create
         KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldo Graf");
         String name;
         private OutputType(String name){
@@ -24,7 +24,7 @@ public class GUI extends JFrame{
     public static void main(String[] args){
         new GUI();
     }
-    public static InputStream load(String path){
+    public static InputStream load(String path){// for reading in resources in jar file
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     }
     public void config(){// the config file can be used to change global variables, \n separated values
@@ -53,18 +53,18 @@ public class GUI extends JFrame{
     public GUI(){
         super("ZKK");
         try{
-            setIconImage(javax.imageio.ImageIO.read(new File(Kaffeligan.logoImagePath)));
+            setIconImage(javax.imageio.ImageIO.read(new File(Kaffeligan.logoImagePath)));// sets window icon
         }
         catch(IOException x){}
-        browseIn.addActionListener(new ActionListener(){
+        browseIn.addActionListener(new ActionListener(){// open filebrowser for input field
             public void actionPerformed(ActionEvent e){
-                File temp=selectCSV();
+                File temp=selectInput();
                 if(temp!=null){
                     in.setText(temp.toString());
                 }
             }
         });
-        browseOut.addActionListener(new ActionListener(){
+        browseOut.addActionListener(new ActionListener(){// open filebrowser for output field
             public void actionPerformed(ActionEvent e){
                 File temp=selectOutput();
                 if(temp!=null){
@@ -72,19 +72,20 @@ public class GUI extends JFrame{
                 }
             }
         });
-        apply.addActionListener(new ActionListener(){
+        apply.addActionListener(new ActionListener(){// try to create the file
             public void actionPerformed(ActionEvent e){
                 boolean worked=true;
-                Kaffeligan.lp=version.getText();
+                Kaffeligan.lp=version.getText();// static value for no reason in particular
                 String inPath=in.getText(),outPath=out.getText();
                 CustomerData.Bank bank=(CustomerData.Bank)bankChooser.getSelectedItem();
                 try{
+                    CustomerData cd=new CustomerData(inPath,bank);// reads the input file
                     switch((OutputType)outputTypeChooser.getSelectedItem()){
-                        case KAFFELIGAN:    Kaffeligan.create(outPath,new CustomerData(inPath,bank));
+                        case KAFFELIGAN:    Kaffeligan.create(outPath,cd);
                                             break;
-                        case CIVET:         Civet.writeGIF(outPath,new CustomerData(inPath,bank));
+                        case CIVET:         Civet.writeGIF(outPath,cd);
                                             break;
-                        case BALANCE_GRAPH: BalanceGraph.writeGraph(inPath,outPath,bank);
+                        case BALANCE_GRAPH: BalanceGraph.writeGraph(outPath,cd);
                                             break;
                     }
                 }
@@ -93,15 +94,15 @@ public class GUI extends JFrame{
                     worked=false;
                 }
                 if(worked){
-                    try{
-                        Desktop.getDesktop().browse(new File(out.getText().replaceAll("/[^/]*?$","")).toURI());
+                    try{// open the folder where the file was made
+                        Desktop.getDesktop().browse(new File(out.getText().replaceAll("/[^/]*?$","")).toURI());// won't work on windows
                     }catch(Exception x){}
                     out.setText("Done");
                 }
             }
         });
         setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
-        JPanel top=new JPanel();
+        JPanel top=new JPanel();// input field, bank dropdown menu, and output field in three rows
         GroupLayout layout=new GroupLayout(top);
         top.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -137,7 +138,7 @@ public class GUI extends JFrame{
                 .addComponent(browseOut)
             )
         );
-        JPanel middle=new JPanel();
+        JPanel middle=new JPanel();// for writing text to "Kaffeligan" image in a row
         GroupLayout lo=new GroupLayout(middle);
         lo.setHorizontalGroup(
             lo.createSequentialGroup()
@@ -150,7 +151,7 @@ public class GUI extends JFrame{
                 .addComponent(versionLabel)
                 .addComponent(version))
         );
-        JPanel bottom=new JPanel();
+        JPanel bottom=new JPanel();// apply button and dropdown menu for choosing output type
         GroupLayout bottomLayout=new GroupLayout(bottom);
         bottomLayout.setHorizontalGroup(
             bottomLayout.createSequentialGroup()
@@ -170,7 +171,7 @@ public class GUI extends JFrame{
         config();
         setVisible(true);
     }
-    public File selectCSV(){
+    public File selectInput(){// file chooser for input file, looks for csv
         JFileChooser chooser=new JFileChooser();
         FileNameExtensionFilter filter=new FileNameExtensionFilter("Supported Files","csv");
         chooser.setFileFilter(filter);
@@ -180,7 +181,7 @@ public class GUI extends JFrame{
         }
         return null;
     }
-    public File selectOutput(){
+    public File selectOutput(){// file chooser for output file, looks for png, jpg, and gif
         JFileChooser chooser=new JFileChooser();
         FileNameExtensionFilter filter=new FileNameExtensionFilter("Supported Files","png","jpg","gif");
         chooser.setFileFilter(filter);

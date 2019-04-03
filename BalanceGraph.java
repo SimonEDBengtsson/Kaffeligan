@@ -4,115 +4,61 @@ import java.io.*;
 import java.util.*;
 import java.text.*;
 import java.awt.image.*;
-public class BalanceGraph extends JPanel{
-    static int width=1920,height=1080,horizontalLines=4,verticalLines=6;
-    Transaction[] transactions;
-    long startDate,endDate;
-    int maxBalance,minBalance;
-    public static void writeGraph(String inPath,String outPath,CustomerData.Bank bank)throws Exception{
+public class BalanceGraph extends JPanel{// a JPanel displaying the balance trend of a CustomerData object
+    static int width=1920,height=1080;// resolution
+    static int horizontalLines=4,verticalLines=6;// horizontal lines for balance, vertical for date
+    CustomerData cd;
+    public static void writeGraph(String outPath,CustomerData cd)throws Exception{// creates a png at "outPath"
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
         }
-        BalanceGraph bg=new BalanceGraph(inPath,bank);
-        BufferedImage bi=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
-        bg.paintComponent(bi.getGraphics());
+        BalanceGraph bg=new BalanceGraph(outPath,cd);
+        BufferedImage bi=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);// create a BufferedImage
+        bg.paintComponent(bi.getGraphics());// draw the JPanel onto it
         javax.imageio.ImageIO.write(bi,"png",new File(outPath));
     }
     @Override
     public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        long duration=endDate-startDate;
-        int balanceSpan=maxBalance-minBalance;
-        double pixperms=(double)width/duration;
+        super.paintComponent(g);// probably does something important
+        long duration=cd.endDate-cd.startDate;
+        int balanceSpan=cd.maxBalance-cd.minBalance;
+        double pixperms=(double)width/duration;// pixels per millisecond/CSEK
         double pixpercsek=(double)height/balanceSpan;
         for(int i=0;i<horizontalLines;i++){
             double ratio=(double)(i+1)/(horizontalLines+1);
             int y=height-(int)(ratio*height+0.5);
-            g.setColor(Color.BLACK);
-            g.drawString(""+Kaffeligan.CSEKtoString(minBalance+(int)(balanceSpan*ratio+0.5)),0,y);
+            g.setColor(Color.BLACK);// label each line with represented balance
+            g.drawString(""+Kaffeligan.CSEKtoString(cd.minBalance+(int)(balanceSpan*ratio+0.5)),0,y);
             g.setColor(Color.LIGHT_GRAY);
             g.drawPolyline(new int[]{0,width},new int[]{y,y},2);
         }
         for(int i=0;i<verticalLines;i++){
             double ratio=(double)(i+1)/(verticalLines+1);
             int x=(int)(width*ratio+0.5);
-            g.setColor(Color.BLACK);
-            g.drawString(formatEpoch(startDate+(long)(duration*ratio),"yyyy-MM-dd"),x,g.getFontMetrics().getAscent());
+            g.setColor(Color.BLACK);// label each line with represented date TODO: change date format after duration
+            g.drawString(formatEpoch(cd.startDate+(long)(duration*ratio),"yyyy-MM-dd"),x,g.getFontMetrics().getAscent());
             g.setColor(Color.LIGHT_GRAY);
             g.drawPolyline(new int[]{x,x},new int[]{0,height},2);
         }
         {
-            g.setColor(Color.DARK_GRAY);
-            int[] x=new int[transactions.length];
-            int[] y=new int[transactions.length];
-            for(int i=0;i<transactions.length;i++){
-                x[i]=(int)(pixperms*(transactions[i].date-startDate)+0.5);
-                y[i]=height-(int)(pixpercsek*(transactions[i].balance-minBalance)+0.5);
+            g.setColor(Color.DARK_GRAY);// finally draw the trend curve
+            int[] x=new int[cd.transactions.length];
+            int[] y=new int[cd.transactions.length];
+            for(int i=0;i<cd.transactions.length;i++){
+                x[i]=(int)(pixperms*(cd.transactions[i].date-cd.startDate)+0.5);
+                y[i]=height-(int)(pixpercsek*(cd.transactions[i].balance-cd.minBalance)+0.5);
             }
             g.drawPolyline(x,y,x.length);
         }
     }
-    public BalanceGraph(String path,CustomerData.Bank bank){
-        readTransactions(path,bank);
+    public BalanceGraph(String path,CustomerData cd){
+        this.cd=cd;
         setPreferredSize(new Dimension(width,height));
     }
-    public void readTransactions(String path,CustomerData.Bank bank){
-        switch(bank){
-            case ICA:   readTransactionsICA(path);
-                        break;
-            default:    transactions=null;
-        }
-        startDate=transactions[0].date;
-        endDate=transactions[transactions.length-1].date;
-        maxBalance=transactions[0].balance;// initialize for comparisson to work
-        minBalance=maxBalance;
-        for(Transaction t:transactions){
-            if(t.balance>maxBalance){
-                maxBalance=t.balance;
-            }
-            if(t.balance<minBalance){
-                minBalance=t.balance;
-            }
-        }
-    }
-    private void readTransactionsICA(String path){
-        ArrayList<Transaction> transactions=new ArrayList<Transaction>();
-        try{
-            BufferedReader in=new BufferedReader(new FileReader(path));// read in the csv file
-            String line=in.readLine();// header
-            while((line=in.readLine())!=null){
-                transactions.add(new Transaction(
-                CustomerData.extractDateICA(line),
-                CustomerData.extractBalanceICA(line)));
-            }
-        }
-        catch(IOException x){
-            this.transactions=null;
-        }
-        this.transactions=transactions.toArray(new Transaction[1]);
-        java.util.Arrays.sort(this.transactions);
-    }
-    public static String formatEpoch(long epoch,String pattern){
+    public static String formatEpoch(long epoch,String pattern){// takes in epoch time and outputs String formatted by SimpleDateFormat
         Date date = new Date(epoch);
         DateFormat format = new SimpleDateFormat(pattern);
         format.setTimeZone(TimeZone.getTimeZone("GMT+1"));
         return format.format(date);
-    }
-    public static class Transaction implements Comparable<Transaction>{
-        long date;
-        int balance;
-        public Transaction(long date,int balance){
-            this.date=date;
-            this.balance=balance;
-        }
-        public int compareTo(Transaction t){
-            if(date<t.date){
-                return -1;
-            }
-            else if(date==t.date){
-                return 0;
-            }
-            return 1;
-        }
     }
 }
