@@ -12,7 +12,7 @@ public class BalanceGraph extends JPanel{// a JPanel displaying the balance tren
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
         }
-        BalanceGraph bg=new BalanceGraph(outPath,cd);
+        BalanceGraph bg=new BalanceGraph(cd);
         BufferedImage bi=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);// create a BufferedImage
         bg.paintComponent(bi.getGraphics());// draw the JPanel onto it
         javax.imageio.ImageIO.write(bi,"png",new File(outPath));
@@ -51,7 +51,7 @@ public class BalanceGraph extends JPanel{// a JPanel displaying the balance tren
             g.drawPolyline(x,y,x.length);
         }
     }
-    public BalanceGraph(String path,CustomerData cd){
+    public BalanceGraph(CustomerData cd){
         this.cd=cd;
         setPreferredSize(new Dimension(width,height));
     }

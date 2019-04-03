@@ -97,7 +97,6 @@ public class GUI extends JFrame{
                     try{// open the folder where the file was made
                         Desktop.getDesktop().browse(new File(out.getText().replaceAll("/[^/]*?$","")).toURI());// won't work on windows
                     }catch(Exception x){}
-                    out.setText("Done");
                 }
             }
         });

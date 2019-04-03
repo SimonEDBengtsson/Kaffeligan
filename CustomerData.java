@@ -38,10 +38,10 @@ public class CustomerData{// contains various data about incoming transactions
         ArrayList<Transaction> transactions=new ArrayList<Transaction>(3);
         String line=in.readLine();// this line is the header and can thus be discarded
         line=in.readLine();// the first line has the newest entry
-        endDate=extractDateICA(line);
-        endBalance=extractBalanceICA(line);
-        maxBalance=endBalance;// initialize to compare later
-        minBalance=endBalance;
+        startDate=extractDateICA(line);
+        startBalance=extractBalanceICA(line);
+        maxBalance=startBalance;// initialize to compare later
+        minBalance=startBalance;
         String mem=line;
         do{
             transactions.add(readTransactionICA(line));
@@ -65,8 +65,8 @@ public class CustomerData{// contains various data about incoming transactions
                 mem=line;
             }
         }while((line=in.readLine())!=null);
-        startDate=extractDateICA(mem);// the last line has the oldest entry
-        startBalance=extractBalanceICA(mem);
+        endDate=extractDateICA(mem);// the last line has the newest entry
+        endBalance=extractBalanceICA(mem);
         netProfit=initialCapital-endBalance;
         this.customers=customers.toArray(new Customer[1]);// turn the arraylist into an array for sort to work
         Arrays.sort(this.customers);// the Comparable interface is implemented to put the highest paid in the beginning of the list
