@@ -46,7 +46,7 @@ public class ICAData extends FinancialData{// contains various data about incomi
         Arrays.sort(super.transactions);// needs flipping, .sort() uses quicksort so should be linear time
     }
     public Transaction readTransaction(String line){// creates a Transaction object corresponding to "line"
-        return new Transaction(extractDate(line),extractBalance(line));
+        return new Transaction(extractDate(line),extractBalance(line),extractPaid(line));
     }
     public static String extractName(String line){// name of the person, designed for Swish payments
         String temp=line.split(";")[nameIndex];
@@ -60,7 +60,7 @@ public class ICAData extends FinancialData{// contains various data about incomi
     }
     public static int extractPaid(String line){// finds amount paid in CSEK
         String temp=line.split(";")[paidIndex];
-        return Integer.parseInt(temp.replaceAll("\\D",""));// remove all but digits
+        return Integer.parseInt(temp.replaceAll("[^\\d-]",""));// remove all but digits and minus sign
     }
     public static long extractDate(String line){// date in milliseconds since the epoch
         String[] date=line.split(";")[dateIndex].split("-");// yyyy-mm-dd;other;stuff;...
@@ -68,6 +68,6 @@ public class ICAData extends FinancialData{// contains various data about incomi
     }
     public static int extractBalance(String line){// finds balance in CSEK
         String temp=line.split(";")[balanceIndex];
-        return Integer.parseInt(temp.replaceAll("\\D",""));// remove all but digits
+        return Integer.parseInt(temp.replaceAll("[^\\d-]",""));// remove all but digits and minus sign
     }
 }

@@ -44,9 +44,11 @@ public abstract class FinancialData{
     public static class Transaction implements Comparable<Transaction>{// wrapper for date and balance
         long date;
         int balance;
-        public Transaction(long date,int balance){
+        int balanceChange;
+        public Transaction(long date,int balance,int balanceChange){
             this.date=date;
             this.balance=balance;
+            this.balanceChange=balanceChange;
         }
         public int compareTo(Transaction t){// want the oldest transactions to come first
             if(date<t.date){
