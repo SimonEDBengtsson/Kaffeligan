@@ -32,20 +32,22 @@ public class Kaffeligan{
         ImageIO.write(bgr,"jpeg",new File(path));
     }
     private static BufferedImage createBufferedImage(FinancialData.Customer[] ca)throws java.io.IOException{
-        int width=1920,height=1080;// resolution
+        int width=GUI.imageWidth,height=GUI.imageHeight;// resolution
         int logoLeftMargin=100,logoRightPadding=40;// graphical design parameters
         int medalLeftMargin=190,medalRightPadding=40,medalTopPadding=20;
         int topMargin=40,amountWidth=500;
         int logoSize=300,medalWidth=120,medalHeight=200,headerSize,textSize;
         int headerFontSize=160,fontSize=90,headerDownShift=45,textDownShift=35;
         
-        ca=decideWinners(ca);// decide which three are the winners and their rankings
+        ca=decideWinners(ca);// decide which three are the winners and their order
         
         BufferedImage background=ImageIO.read(GUI.load(backgroundImagePath));// read in the graphical assets
         BufferedImage logo=ImageIO.read(GUI.load(logoImagePath));
-        BufferedImage bronze=ImageIO.read(GUI.load(bronzeImagePath));
-        BufferedImage silver=ImageIO.read(GUI.load(silverImagePath));
-        BufferedImage gold=ImageIO.read(GUI.load(goldImagePath));
+        Image bronze=ImageIO.read(GUI.load(bronzeImagePath)).getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH);
+        Image silver=ImageIO.read(GUI.load(silverImagePath)).getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH);
+        Image gold=ImageIO.read(GUI.load(goldImagePath)).getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH);
+        Image[] medals=new Image[]{gold,silver,bronze};// create array too let same payment give same medal
+        int i=0;
         BufferedImage image=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
         
         java.awt.Graphics g=image.getGraphics();// start composing the picture, background, logo, header
@@ -57,19 +59,21 @@ public class Kaffeligan{
         int x=medalLeftMargin+medalWidth+medalRightPadding;// vertical baseline for names
         int y=topMargin+logoSize+medalTopPadding;// horizontal baseline for gold medal
         if(ca.length>0){// add medal, name and paid amount for first place
-            g.drawImage(gold.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            g.drawImage(medals[i],medalLeftMargin,y,null);
             outlinedText(g,ca[0].name,x,y+textDownShift,fontSize);
             outlinedText(g,CSEKtoString(ca[0].paid),amountOffset,y+textDownShift,fontSize);
         }
         y+=medalHeight+medalTopPadding;// move horizontal baseline down to silver medal and repeat above steps for runner-up
         if(ca.length>1){// second place
-            g.drawImage(silver.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            i=ca[1].paid<ca[0].paid?i+1:i;// if second place has payed as much as first, he gets a gold medal too
+            g.drawImage(medals[i],medalLeftMargin,y,null);
             outlinedText(g,ca[1].name,x,y+textDownShift,fontSize);
             outlinedText(g,CSEKtoString(ca[1].paid),amountOffset,y+textDownShift,fontSize);
         }
         y+=medalHeight+medalTopPadding;// finally do the bronze medalist
         if(ca.length>2){// third place
-            g.drawImage(bronze.getScaledInstance(medalWidth,medalHeight,Image.SCALE_SMOOTH),medalLeftMargin,y,null);
+            i=ca[2].paid<ca[1].paid?i+1:i;
+            g.drawImage(medals[i],medalLeftMargin,y,null);
             outlinedText(g,ca[2].name,x,y+textDownShift,fontSize);
             outlinedText(g,CSEKtoString(ca[2].paid),amountOffset,y+textDownShift,fontSize);
         }

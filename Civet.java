@@ -8,7 +8,7 @@ import javax.imageio.*;
 import javax.imageio.stream.*;
 public class Civet{
     final static long msmonth=2628000000L,msweek=604800000L,msday=86400000L;// conversion constants milliseconds in a month/week/day
-    protected static int width=1920,height=1080;
+    protected static int width=GUI.imageWidth,height=GUI.imageHeight;
     protected static int rightEyeX=1334,rightEyeY=580,leftEyeX=888,leftEyeY=648;// coordinates for various bodyparts
     protected static int rightCheekX=1400,rightCheekY=700,leftCheekX=800,leftCheekY=780;
     protected static int smileX=1212,smileY=932,smileWidth=200,smileHeight=70;

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.*;
 public class GUI extends JFrame{
     final static String configPath="resources/kaffeligan.config";
+    static int imageWidth=1920,imageHeight=1080;
     JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which format? ");
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);

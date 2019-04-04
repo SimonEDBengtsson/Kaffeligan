@@ -5,7 +5,7 @@ import java.util.*;
 import java.text.*;
 import java.awt.image.*;
 public class BalanceGraph extends JPanel{// a JPanel displaying the balance trend of a CustomerData object
-    static int width=1920,height=1080;// resolution
+    static int width=GUI.imageWidth,height=GUI.imageHeight;// resolution
     static int horizontalLines=4,verticalLines=6;// horizontal lines for balance, vertical for date
     FinancialData fd;
     public static void writeGraph(String outPath,FinancialData fd)throws Exception{// creates a png at "outPath"
@@ -60,5 +60,8 @@ public class BalanceGraph extends JPanel{// a JPanel displaying the balance tren
         DateFormat format = new SimpleDateFormat(pattern);
         format.setTimeZone(TimeZone.getTimeZone("GMT+1"));
         return format.format(date);
+    }
+    public static double[] fft(int[] values){
+        return null;
     }
 }
