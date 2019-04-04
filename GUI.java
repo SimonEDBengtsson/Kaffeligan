@@ -13,7 +13,7 @@ public class GUI extends JFrame{
     JComboBox<FinancialData.Bank> bankChooser=new JComboBox<FinancialData.Bank>(FinancialData.Bank.values());
     JDropDownButton<OutputType> create=new JDropDownButton<OutputType>(OutputType.values());
     public enum OutputType{// the types of file this program can create
-        KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldo Graf");
+        KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldograf"),TRANSACTION_GRAPH("Transaktionsgraf");
         String name;
         private OutputType(String name){
             this.name=name;
@@ -91,12 +91,14 @@ public class GUI extends JFrame{
                     }
                     if(fd!=null){
                         switch(create.getSelectedItem()){
-                            case KAFFELIGAN:    Kaffeligan.create(outPath,fd);
-                                                break;
-                            case CIVET:         Civet.writeGIF(outPath,fd);
-                                                break;
-                            case BALANCE_GRAPH: BalanceGraph.writeGraph(outPath,fd);
-                                                break;
+                            case KAFFELIGAN:         Kaffeligan.create(outPath,fd);
+                                                     break;
+                            case CIVET:              Civet.writeGIF(outPath,fd);
+                                                     break;
+                            case BALANCE_GRAPH:      BalanceGraph.writeGraph(outPath,fd);
+                                                     break;
+                            case TRANSACTION_GRAPH:  TransactionGraph.writeGraph(outPath,fd);
+                                                     break;
                         }
                     }
                 }

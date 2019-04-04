@@ -4,18 +4,11 @@ import java.util.*;
 import java.awt.image.*;
 import java.io.*;
 public class TransactionGraph extends JPanel{
-    static int width=500,height=500;
+    static int width=GUI.imageWidth,height=GUI.imageHeight,pointRadius=3;
     static int horizontalLines=4;// horizontal lines for balance change
     FinancialData.Transaction[] ta;
     PeriodicTrade pt;
     long period;
-    public static void test()throws Throwable{
-        JFrame frame=new JFrame();
-        TransactionGraph tg=new TransactionGraph(new ICAData("/home/simon/Downloads/Kontohandelser2019-04-01(1).csv"));
-        frame.add(tg);
-        frame.pack();
-        frame.setVisible(true);
-    }
     public static void writeGraph(String outPath,FinancialData fd)throws Exception{// creates a png at "outPath"
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
@@ -29,7 +22,7 @@ public class TransactionGraph extends JPanel{
         this(fd,"");
     }
     public TransactionGraph(FinancialData fd,String options){
-        this(fd,options,604800000L);
+        this(fd,options,604800000L);// arbitrary period, one week
     }
     public TransactionGraph(FinancialData fd,String options,long period){
         switch(options){
@@ -81,14 +74,15 @@ public class TransactionGraph extends JPanel{
             g.setColor(Color.LIGHT_GRAY);
             g.drawLine(0,y,width,y);
             g.setColor(Color.BLACK);
-            int csek=min+(int)(((double)y/height)*balanceChangeSpan+0.5);
+            int csek=min+(int)((1.0-(double)y/height)*balanceChangeSpan+0.5);
             g.drawString(Kaffeligan.CSEKtoString(csek),0,y);// wrong way around TODO: fix
         }
         for(int i=0;i<pt.balanceChanges.length;i++){
             int x=(int)(xRatio*i+0.5);
             int y=height-(int)((pt.balanceChanges[i]-min)*yRatio+0.5);
             g.setColor(Color.BLACK);
-            g.drawLine(x,base,x,y);
+            g.drawLine(x,base,x,y>base?y-pointRadius:y+pointRadius);
+            g.drawOval(x-pointRadius,y-pointRadius,pointRadius*2,pointRadius*2);
         }
         g.drawLine(0,base,width,base);// baseline
         g.drawString("T="+Civet.formatTime(pt.period),0,g.getFontMetrics().getAscent());
