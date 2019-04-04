@@ -17,18 +17,18 @@ public class Civet{
     protected static String tearPath="resources/tear.png";
     protected static String sparklePath="resources/sparkle.png";
     protected static String smilePath="resources/mouth.png";
-    public static void writeGIF(String outPath,CustomerData cd)throws Exception{// writes a gif at "outPath", based on "cd"
+    public static void writeGIF(String outPath,FinancialData fd)throws Exception{// writes a gif at "outPath", based on "fd"
         if(!outPath.matches(".*\\.gif$")){// make sure outPath is a .gif file
             throw new Exception("Filetype not supported");
         }
         ImageOutputStream out=new FileImageOutputStream(new File(outPath));// ready the gif writer
         BufferedImage civet=ImageIO.read(GUI.load(civetPath));// background image
         GifSequenceWriter gif=new GifSequenceWriter(out,civet.getType(),1000/fps,true);
-        if(cd.startBalance>cd.endBalance){// loss, sad
-            sadCivet(gif,civet,cd.startBalance-cd.endBalance,cd.endDate-cd.startDate);
+        if(fd.startBalance>fd.endBalance){// loss, sad
+            sadCivet(gif,civet,fd.startBalance-fd.endBalance,fd.endDate-fd.startDate);
         }
-        else if(cd.startBalance<cd.endBalance){// gain, happy
-            happyCivet(gif,civet,cd.endBalance-cd.startBalance,cd.endDate-cd.startDate);
+        else if(fd.startBalance<fd.endBalance){// gain, happy
+            happyCivet(gif,civet,fd.endBalance-fd.startBalance,fd.endDate-fd.startDate);
         }
     }
     private static void sadCivet(GifSequenceWriter gif,BufferedImage civet,int deficit,long time)throws java.io.IOException{

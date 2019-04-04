@@ -9,7 +9,7 @@ public class GUI extends JFrame{
     JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
     JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
     JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Create");
-    JComboBox<CustomerData.Bank> bankChooser=new JComboBox<CustomerData.Bank>(CustomerData.Bank.values());
+    JComboBox<FinancialData.Bank> bankChooser=new JComboBox<FinancialData.Bank>(FinancialData.Bank.values());
     JDropDownButton<OutputType> create=new JDropDownButton<OutputType>(OutputType.values());
     public enum OutputType{// the types of file this program can create
         KAFFELIGAN("Kaffeligan"),CIVET("Civet"),BALANCE_GRAPH("Saldo Graf");
@@ -31,10 +31,10 @@ public class GUI extends JFrame{
     public void config(){// the config file can be used to change global variables, \n separated values
         try{
             BufferedReader in=new BufferedReader(new InputStreamReader(load(configPath)));
-            CustomerData.dateIndex=Integer.parseInt(in.readLine());
-            CustomerData.nameIndex=Integer.parseInt(in.readLine());
-            CustomerData.paidIndex=Integer.parseInt(in.readLine());
-            CustomerData.balanceIndex=Integer.parseInt(in.readLine());
+            FinancialData.dateIndex=Integer.parseInt(in.readLine());
+            FinancialData.nameIndex=Integer.parseInt(in.readLine());
+            FinancialData.paidIndex=Integer.parseInt(in.readLine());
+            FinancialData.balanceIndex=Integer.parseInt(in.readLine());
             Kaffeligan.backgroundImagePath=in.readLine();
             Kaffeligan.logoImagePath=in.readLine();
             Kaffeligan.goldImagePath=in.readLine();
@@ -78,16 +78,25 @@ public class GUI extends JFrame{
                 boolean worked=true;
                 Kaffeligan.lp=version.getText();// static value for no reason in particular
                 String inPath=in.getText(),outPath=out.getText();
-                CustomerData.Bank bank=(CustomerData.Bank)bankChooser.getSelectedItem();
+                FinancialData.Bank bank=(FinancialData.Bank)bankChooser.getSelectedItem();
                 try{
-                    CustomerData cd=new CustomerData(inPath,bank);// reads the input file
-                    switch(create.getSelectedItem()){
-                        case KAFFELIGAN:    Kaffeligan.create(outPath,cd);
-                                            break;
-                        case CIVET:         Civet.writeGIF(outPath,cd);
-                                            break;
-                        case BALANCE_GRAPH: BalanceGraph.writeGraph(outPath,cd);
-                                            break;
+                    FinancialData fd;// reads the input file
+                    switch(bank){
+                        case ICA:   fd=new ICAData(inPath);
+                                    break;
+                        default:    fd=null;
+                                    worked=false;
+                                    out.setText("Bank not supported");
+                    }
+                    if(fd!=null){
+                        switch(create.getSelectedItem()){
+                            case KAFFELIGAN:    Kaffeligan.create(outPath,fd);
+                                                break;
+                            case CIVET:         Civet.writeGIF(outPath,fd);
+                                                break;
+                            case BALANCE_GRAPH: BalanceGraph.writeGraph(outPath,fd);
+                                                break;
+                        }
                     }
                 }
                 catch(Throwable t){

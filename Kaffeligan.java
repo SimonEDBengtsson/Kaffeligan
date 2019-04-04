@@ -11,27 +11,27 @@ public class Kaffeligan{
     static String silverImagePath="resources/silver.png";
     static String goldImagePath="resources/gold.png";
     static String lp="LP1";
-    public static void create(String path,CustomerData cd)throws Exception{// writes either a png or jpg at "path", generated from "cd"
+    public static void create(String path,FinancialData fd)throws Exception{// writes either a png or jpg at "path", generated from "fd"
         if(path.matches(".*\\.png$")){// check the path to see what image type to use
-            writePNG(path,cd);
+            writePNG(path,fd);
         }
         else if(path.matches(".*\\.jpg$")){
-            writeJPG(path,cd);
+            writeJPG(path,fd);
         }
         else{
             throw new Exception("Filetype not supported");
         }
     }
-    public static void writePNG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
-        ImageIO.write(createBufferedImage(cd.customers),"png",new File(path));
+    public static void writePNG(String path,FinancialData fd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a png file
+        ImageIO.write(createBufferedImage(fd.customers),"png",new File(path));
     }
-    public static void writeJPG(String path,CustomerData cd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
-        BufferedImage argb=createBufferedImage(cd.customers);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
+    public static void writeJPG(String path,FinancialData fd)throws java.io.IOException{// sends the array of sorted customers onward, gets a BufferedImage and writes it to a jpg file
+        BufferedImage argb=createBufferedImage(fd.customers);// OpenJDK doesn't play nice with jpg, can't handle the alpha channel
         BufferedImage bgr=new BufferedImage(argb.getWidth(),argb.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
         bgr.getGraphics().drawImage(argb,0,0,null);
         ImageIO.write(bgr,"jpeg",new File(path));
     }
-    private static BufferedImage createBufferedImage(CustomerData.Customer[] ca)throws java.io.IOException{
+    private static BufferedImage createBufferedImage(FinancialData.Customer[] ca)throws java.io.IOException{
         int width=1920,height=1080;// resolution
         int logoLeftMargin=100,logoRightPadding=40;// graphical design parameters
         int medalLeftMargin=190,medalRightPadding=40,medalTopPadding=20;
@@ -118,8 +118,8 @@ public class Kaffeligan{
         g.setColor(new java.awt.Color(250,250,250));
         g.drawString(text,x,y);// put the white text on top
     }
-    private static CustomerData.Customer[] decideWinners(CustomerData.Customer[] ca){// picks out the customers who have paid the most, randomizes ties
-        CustomerData.Customer[] result=new CustomerData.Customer[winners<ca.length?winners:ca.length];
+    private static FinancialData.Customer[] decideWinners(FinancialData.Customer[] ca){// picks out the customers who have paid the most, randomizes ties
+        FinancialData.Customer[] result=new FinancialData.Customer[winners<ca.length?winners:ca.length];
         int decided=0;
         int i=0;
         while(decided<winners && decided<ca.length){
@@ -130,7 +130,7 @@ public class Kaffeligan{
                 }
             }
             catch(IndexOutOfBoundsException x){}// can happen for short arrays, or arrays with low spread
-            CustomerData.Customer[] temp=new CustomerData.Customer[i-mem+1];// array for all customers of same rank
+            FinancialData.Customer[] temp=new FinancialData.Customer[i-mem+1];// array for all customers of same rank
             for(int j=mem;j<=i;j++){
                 temp[j-mem]=ca[j];
             }
