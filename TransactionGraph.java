@@ -77,10 +77,10 @@ public class TransactionGraph extends JPanel{
             int csek=min+(int)((1.0-(double)y/height)*balanceChangeSpan+0.5);
             g.drawString(Kaffeligan.CSEKtoString(csek),0,y);// wrong way around TODO: fix
         }
+        g.setColor(Color.BLACK);
         for(int i=0;i<pt.balanceChanges.length;i++){
             int x=(int)(xRatio*i+0.5);
             int y=height-(int)((pt.balanceChanges[i]-min)*yRatio+0.5);
-            g.setColor(Color.BLACK);
             g.drawLine(x,base,x,y>base?y-pointRadius:y+pointRadius);
             g.drawOval(x-pointRadius,y-pointRadius,pointRadius*2,pointRadius*2);
         }
