@@ -18,8 +18,8 @@ public class ICAData extends FinancialData{// contains various data about incomi
         do{
             transactions.add(readTransaction(line));
             int balance=extractBalance(line);
-            super.maxBalance=maxBalance<balance?balance:maxBalance;// if "line"s balance is higher/lower than max/min, update
-            super.minBalance=balance<minBalance?balance:minBalance;
+            super.maxBalance=super.maxBalance<balance?balance:super.maxBalance;// if "line"s balance is higher/lower than max/min, update
+            super.minBalance=balance<super.minBalance?balance:super.minBalance;
             if(extractType(line).equals("Insättning")){// only deposits are counted as customers, need more speciftions for enum
                 String name=extractName(line);
                 int paid=extractPaid(line);
@@ -45,7 +45,7 @@ public class ICAData extends FinancialData{// contains various data about incomi
         super.transactions=transactions.toArray(new Transaction[1]);
         Arrays.sort(super.transactions);// needs flipping, .sort() uses quicksort so should be linear time
     }
-    public Transaction readTransaction(String line){
+    public Transaction readTransaction(String line){// creates a Transaction object corresponding to "line"
         return new Transaction(extractDate(line),extractBalance(line));
     }
     public static String extractName(String line){// name of the person, designed for Swish payments
@@ -69,12 +69,5 @@ public class ICAData extends FinancialData{// contains various data about incomi
     public static int extractBalance(String line){// finds balance in CSEK
         String temp=line.split(";")[balanceIndex];
         return Integer.parseInt(temp.replaceAll("\\D",""));// remove all but digits
-    }
-    private void undefined(){
-        customers=null;
-        startBalance=-1;
-        endBalance=-1;
-        startDate=-1;
-        endDate=-1;
     }
 }
