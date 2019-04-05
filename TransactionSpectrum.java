@@ -24,7 +24,7 @@ public class TransactionSpectrum extends TransactionGraph{
     }
     public TransactionSpectrum(FinancialData fd,String options,long period){
         super(fd,options,period);
-        Complex[] ft=Complex.dft(pt.balanceChanges);
+        Complex[] ft=Complex.fft(pt.balanceChanges);
         amplitude=new int[ft.length];
         for(int i=0;i<amplitude.length;i++){
             amplitude[i]=(int)(ft[i].abs()/amplitude.length+0.5);

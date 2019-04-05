@@ -17,6 +17,9 @@ public class Complex{
     public Complex scale(double c){
         return new Complex(re*c,im*c);
     }
+    public Complex phaseShift(double ang){
+        return new Complex(Math.cos(ang)*re,Math.sin(ang)*im);
+    }
     public Complex subtract(Complex z){
         return this.add(z.scale(-1));
     }
@@ -68,5 +71,59 @@ public class Complex{
             y[i]=(double)x[i];
         }
         return dft(y);
+    }
+    public static Complex[] fft(double[] x){
+        if(x.length==1){
+            return new Complex[]{new Complex(x[0],0)};// base case
+        }
+        x=fftZeroPad(x);
+        double[] even=new double[x.length/2];
+        double[] odd=new double[even.length];
+        for(int i=0;i<even.length;i++){// split the input into even and odd indeces
+            even[i]=x[2*i];
+            odd[i]=x[2*i+1];
+        }
+        Complex[] evenX=fft(even);
+        Complex[] oddX=fft(odd);
+        for(int i=0;i<odd.length;i++){
+            oddX[i]=oddX[i].phaseShift(2*Math.PI*i/x.length);
+        }
+        Complex[] X=new Complex[x.length];
+        for(int i=0;i<even.length;i++){
+            X[i]=evenX[i].add(oddX[i]);
+            X[i+even.length]=evenX[i].subtract(oddX[i]);
+        }
+        return X;
+    }
+    public static Complex[] fft(int[] x){
+        double[] y=new double[x.length];
+        for(int i=0;i<y.length;i++){
+            y[i]=(double)x[i];
+        }
+        return fft(y);
+    }
+    public static double[] fftZeroPad(double[] x){
+        int exp=0;
+        int temp=x.length;
+        int bits=0;
+        while((temp>>>=1)>0){
+            exp++;
+            bits+=temp & 1;
+        }
+        if(bits>1){
+            exp++;
+        }
+        int length=1;
+        for(int i=0;i<exp;i++){
+            length*=2;
+        }
+        double[] y=new double[length];
+        for(int i=0;i<x.length;i++){
+            y[i]=x[i];
+        }
+        for(int i=x.length;i<y.length;i++){
+            y[i]=0;
+        }
+        return y;
     }
 }
