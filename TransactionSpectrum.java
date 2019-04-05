@@ -4,11 +4,13 @@ public class TransactionSpectrum extends TransactionGraph{
     static int verticalLines=8;
     int[] amplitude;
     int maxAmplitude=0;
-    public static void writeGraph(String outPath,FinancialData fd)throws Exception{// creates a png at "outPath"
+    public static void writeGraph(String outPath,FinancialData fd,GUI caller)throws Exception{// creates a png at "outPath"
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
         }
-        TransactionGraph tg=new TransactionSpectrum(fd);
+        String type=caller.requestDataFromUser("What transactions to display","Type",new String[]{"all","in","out"},"all");
+        long period=Long.parseLong(caller.requestDataFromUser("The period in milliseconds","Period",null,null));
+        TransactionGraph tg=new TransactionSpectrum(fd,type,period);
         java.awt.image.BufferedImage bi=new java.awt.image.BufferedImage(width,height,java.awt.image.BufferedImage.TYPE_INT_ARGB);
         tg.paintComponent(bi.getGraphics());// draw the JPanel onto it
         javax.imageio.ImageIO.write(bi,"png",new java.io.File(outPath));

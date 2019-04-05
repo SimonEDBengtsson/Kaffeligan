@@ -6,9 +6,8 @@ import java.io.*;
 public class GUI extends JFrame{
     final static String configPath="resources/kaffeligan.config";
     static int imageWidth=1920,imageHeight=1080;
-    JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which format? ");
-    JLabel versionLabel=new JLabel("\"Kaffeligan \"+");
-    JTextField in=new JTextField(40),out=new JTextField(40),version=new JTextField(5);
+    JLabel labelIn=new JLabel("Input path (csv):"),labelOut=new JLabel("Output path (png,jpg or gif):"),format=new JLabel("Which bank? ");
+    JTextField in=new JTextField(40),out=new JTextField(40);
     JButton browseIn=new JButton("browse..."),browseOut=new JButton("browse..."),apply=new JButton("Create");
     JComboBox<FinancialData.Bank> bankChooser=new JComboBox<FinancialData.Bank>(FinancialData.Bank.values());
     JDropDownButton<OutputType> create=new JDropDownButton<OutputType>(OutputType.values());
@@ -78,7 +77,6 @@ public class GUI extends JFrame{
         create.addActionListener(new ActionListener(){// try to create the file
             public void actionPerformed(ActionEvent e){
                 boolean worked=true;
-                Kaffeligan.lp=version.getText();// static value for no reason in particular
                 String inPath=in.getText(),outPath=out.getText();
                 FinancialData.Bank bank=(FinancialData.Bank)bankChooser.getSelectedItem();
                 try{
@@ -91,18 +89,7 @@ public class GUI extends JFrame{
                                     out.setText("Bank not supported");
                     }
                     if(fd!=null){
-                        switch(create.getSelectedItem()){
-                            case KAFFELIGAN:            Kaffeligan.create(outPath,fd);
-                                                        break;
-                            case CIVET:                 Civet.writeGIF(outPath,fd);
-                                                        break;
-                            case BALANCE_GRAPH:         BalanceGraph.writeGraph(outPath,fd);
-                                                        break;
-                            case TRANSACTION_GRAPH:     TransactionGraph.writeGraph(outPath,fd);
-                                                        break;
-                            case TRANSACTION_SPECTRUM:  TransactionSpectrum.writeGraph(outPath,fd);
-                                                        break;
-                        }
+                        createFile(outPath,fd);
                     }
                 }
                 catch(Throwable t){
@@ -153,19 +140,6 @@ public class GUI extends JFrame{
                 .addComponent(browseOut)
             )
         );
-        JPanel middle=new JPanel();// for writing text to "Kaffeligan" image in a row
-        GroupLayout lo=new GroupLayout(middle);
-        lo.setHorizontalGroup(
-            lo.createSequentialGroup()
-                .addComponent(versionLabel)
-                .addComponent(version)
-        );
-        lo.setVerticalGroup(
-            lo.createSequentialGroup()
-            .addGroup(lo.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(versionLabel)
-                .addComponent(version))
-        );
         JPanel bottom=new JPanel();// apply button and dropdown menu for choosing output type
         GroupLayout bottomLayout=new GroupLayout(bottom);
         bottomLayout.setHorizontalGroup(
@@ -177,7 +151,6 @@ public class GUI extends JFrame{
                 .addComponent(create)
         );
         add(top);
-        add(middle);
         add(bottom);
         pack();
         config();
@@ -202,5 +175,23 @@ public class GUI extends JFrame{
             return chooser.getSelectedFile();
         }
         return null;
+    }
+    public void createFile(String outPath,FinancialData fd)throws Exception{
+        switch(create.getSelectedItem()){
+            case KAFFELIGAN:            Kaffeligan.create(outPath,fd,this);
+                                        break;
+            case CIVET:                 Civet.writeGIF(outPath,fd);
+                                        break;
+            case BALANCE_GRAPH:         BalanceGraph.writeGraph(outPath,fd);
+                                        break;
+            case TRANSACTION_GRAPH:     TransactionGraph.writeGraph(outPath,fd,this);
+                                        break;
+            case TRANSACTION_SPECTRUM:  TransactionSpectrum.writeGraph(outPath,fd,this);
+                                        break;
+        }
+    }
+    public String requestDataFromUser(Object request,String title,String[] choices,String firstChoice){
+        Icon icon=null;
+        return (String)JOptionPane.showInputDialog(this,request,title,JOptionPane.QUESTION_MESSAGE,icon,choices,firstChoice);
     }
 }

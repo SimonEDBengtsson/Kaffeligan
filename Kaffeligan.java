@@ -11,7 +11,8 @@ public class Kaffeligan{
     static String silverImagePath="resources/silver.png";
     static String goldImagePath="resources/gold.png";
     static String lp="LP1";
-    public static void create(String path,FinancialData fd)throws Exception{// writes either a png or jpg at "path", generated from "fd"
+    public static void create(String path,FinancialData fd,GUI caller)throws Exception{// writes either a png or jpg at "path", generated from "fd"
+        lp=caller.requestDataFromUser("\"Kaffeligan \"+","Kaffeligan version",null,null);
         if(path.matches(".*\\.png$")){// check the path to see what image type to use
             writePNG(path,fd);
         }

@@ -9,11 +9,13 @@ public class TransactionGraph extends JPanel{
     FinancialData.Transaction[] ta;
     PeriodicTrade pt;
     long period;
-    public static void writeGraph(String outPath,FinancialData fd)throws Exception{// creates a png at "outPath"
+    public static void writeGraph(String outPath,FinancialData fd,GUI caller)throws Exception{// creates a png at "outPath"
         if(!outPath.matches(".*\\.png$")){
             throw new Exception("Filetype not supported");
         }
-        TransactionGraph tg=new TransactionGraph(fd);
+        String type=caller.requestDataFromUser("What transactions to display","Type",new String[]{"all","in","out"},"all");
+        long period=Long.parseLong(caller.requestDataFromUser("The period in milliseconds","Period",null,null));
+        TransactionGraph tg=new TransactionGraph(fd,type,period);
         BufferedImage bi=new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);// create a BufferedImage
         tg.paintComponent(bi.getGraphics());// draw the JPanel onto it
         javax.imageio.ImageIO.write(bi,"png",new File(outPath));
@@ -21,11 +23,11 @@ public class TransactionGraph extends JPanel{
     public TransactionGraph(FinancialData fd){
         this(fd,"");
     }
-    public TransactionGraph(FinancialData fd,String options){
-        this(fd,options,604800000L);// arbitrary period, one week
+    public TransactionGraph(FinancialData fd,String type){
+        this(fd,type,604800000L);// arbitrary period, one week
     }
-    public TransactionGraph(FinancialData fd,String options,long period){
-        switch(options){
+    public TransactionGraph(FinancialData fd,String type,long period){
+        switch(type){
             case "in":  ta=parseIn(fd);// removes all negative transactions
                         break;
             case "out": ta=parseOut(fd);// removes all positive transactions
