@@ -86,15 +86,14 @@ public class GUI extends JFrame{
                                     break;
                         default:    fd=null;
                                     worked=false;
-                                    out.setText("Bank not supported");
+                                    error("Bank not supported","This bank is not yet supported, please get a new account");
                     }
                     if(fd!=null){
                         createFile(outPath,fd);
                     }
                 }
                 catch(Throwable t){
-                    out.setText(t.toString());
-                    t.printStackTrace();
+                    error("Error",t.toString());
                     worked=false;
                 }
                 if(worked){
@@ -190,6 +189,9 @@ public class GUI extends JFrame{
             case TRANSACTION_SPECTRUM:  TransactionSpectrum.writeGraph(outPath,fd,this);
                                         break;
         }
+    }
+    public void error(String title,String error){
+        JOptionPane.showMessageDialog(this,error,title,JOptionPane.ERROR_MESSAGE);
     }
     public String requestDataFromUser(Object request,String title,String[] choices,String firstChoice){
         Icon icon=null;
