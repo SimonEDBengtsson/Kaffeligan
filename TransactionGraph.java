@@ -108,14 +108,14 @@ public class TransactionGraph extends JPanel{
             }
             return new PeriodicTrade(period,balanceChanges);
         }
-        public int maxChange(){// doesn't return a number under 0
+        public int maxChange(){// largest positive transaction or 0 (if no positive)
             int max=0;
             for(int bc:balanceChanges){
                 max=max<bc?bc:max;
             }
             return max;
         }
-        public int minChange(){// doesn't return a number over 0
+        public int minChange(){// largest negative transaction or 0 (if no negative)
             int min=0;
             for(int bc:balanceChanges){
                 min=min<bc?min:bc;

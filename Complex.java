@@ -102,26 +102,29 @@ public class Complex{
         }
         return fft(y);
     }
-    public static double[] fftZeroPad(double[] x){
-        int exp=0;
+    public static double[] fftZeroPad(double[] x){// returns x padded to a length that's a power of 2
+        int exp=0;// first round the length of x up to a round power of 2
         int temp=x.length;
         int bits=0;
-        while((temp>>>=1)>0){
-            exp++;
-            bits+=temp & 1;
+        while((temp>>>=1)>0){// bit-shift the length of x to the right
+            exp++;// count the highest power of two
+            bits+=temp & 1;// count the number of bits
         }
-        if(bits>1){
+        if(bits>1){// if there's more than one bit, round up
             exp++;
+        }
+        else{// already an even power of 2, no padding needed
+            return x;
         }
         int length=1;
-        for(int i=0;i<exp;i++){
+        for(int i=0;i<exp;i++){// length=2^exp
             length*=2;
         }
-        double[] y=new double[length];
-        for(int i=0;i<x.length;i++){
+        double[] y=new double[length];// create the new array
+        for(int i=0;i<x.length;i++){// put in x
             y[i]=x[i];
         }
-        for(int i=x.length;i<y.length;i++){
+        for(int i=x.length;i<y.length;i++){// pad with zeros
             y[i]=0;
         }
         return y;

@@ -94,6 +94,7 @@ public class GUI extends JFrame{
                 }
                 catch(Throwable t){
                     out.setText(t.toString());
+                    t.printStackTrace();
                     worked=false;
                 }
                 if(worked){

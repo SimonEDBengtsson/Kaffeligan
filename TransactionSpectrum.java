@@ -22,11 +22,11 @@ public class TransactionSpectrum extends TransactionGraph{
         frame.setVisible(true);
     }
     public TransactionSpectrum(FinancialData fd){
-        this(fd,"",86400000L);
+        this(fd,"",10000000L);
     }
     public TransactionSpectrum(FinancialData fd,String options,long period){
         super(fd,options,period);
-        Complex[] ft=Complex.fft(pt.balanceChanges);
+        Complex[] ft=Complex.dft(pt.balanceChanges);
         amplitude=new int[ft.length];
         for(int i=0;i<amplitude.length;i++){
             amplitude[i]=(int)(ft[i].abs()/amplitude.length+0.5);
@@ -48,7 +48,7 @@ public class TransactionSpectrum extends TransactionGraph{
             g.drawString("T="+Civet.formatTime(T),x,g.getFontMetrics().getAscent());
         }
         g.setColor(Color.BLACK);
-        for(int i=0;i<(amplitude.length+1)/2;i++){
+        for(int i=0;i<amplitude.length/2;i++){
             int x=(int)(xRatio*i+0.5);
             int y=height-(int)(yRatio*amplitude[i]+0.5);
             g.drawLine(x,height,x,y);

@@ -2,12 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 public class JDropDownButton<T> extends JLayeredPane{// a button with a dropdown menu to change it's action
-    private static final int arrowWidth=18;// TODO: figure out where this value is specified
     private JButton button;
     private JComboBox comboBox;
-    public JDropDownButton(){
-        this(new JButton(),new JComboBox<T>());
-    }
     public JDropDownButton(T[] choices){
         this(new JButton(choices[0].toString()),new JComboBox<T>(choices));
     }
@@ -16,6 +12,7 @@ public class JDropDownButton<T> extends JLayeredPane{// a button with a dropdown
         this.comboBox=comboBox;
         button.setText(comboBox.getSelectedItem().toString());
         Dimension size=comboBox.getPreferredSize();
+        int arrowWidth=comboBox.getComponents()[0].getMinimumSize().width-1;// the component at index 0 for a combobox is the arrow
         setPreferredSize(size);
         setLayout(null);
         comboBox.setBounds(0,0,size.width,size.height);// size the component after the combobox
